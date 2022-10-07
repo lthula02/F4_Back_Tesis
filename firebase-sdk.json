@@ -1,0 +1,14 @@
+{
+  "type": "service_account",
+  "project_id": "tesis-carlos-vincent",
+  "private_key_id": "113a190b61d1c0bd3b28483d19e198a6b1d46fcd",
+  "private_key": "-----BEGIN PRIVATE KEY-----\nMIIEvgIBADANBgkqhkiG9w0BAQEFAASCBKgwggSkAgEAAoIBAQCXfFYbZO7aZEoN\ns6kTUNR5B+yQ4NujfdP+t2s+VE7exfjAj89oIoKN/Lukn2W8i/WQccP1twQLab61\npq5f6NCcUBmvoyksO/Zi6M7p3dp5kIXaRFg+9JHyMqw640u4P29jMvKaQ37Mkg+5\nlS2QXIcgRpvWS+SL3HkpG67AdtHUX3XBv3Brm6UOAAxW6t13dqi+h/zVaJIH1GAu\n/n0T/xEtTD6jL2J+lK1sd1KTOa7JJ7jcYFTGa0lxtEhi6SHIbB/yxaLf05n4gA+w\nIEwOa9Ar+fSAYrrdRZofdIjSgjStTr+SNRCd99FLCcbgLRlm+TyT8oKTBmHfxGe3\n4DEg5ieRAgMBAAECggEABOQa05+apqp+SZr3ZoxBj/bViIf6D3lMkvjRGZ4XPdIe\nifkatT4IARWb6WDMJB5Qu20w6ooSM1wisDLFhos50RI1Ahq+hZMaDW9+3sYu+6XS\n7I0wXDgBTlScgvo7w6MosYc/lgN/4JMGtvM+GV8jbcNZ3L1uj6V6s/0U01oCxFyT\n7Dvz1dTdp6xCVcjxlry6MYA3JOsZBHVEAC7erQueJJIYiyzKAjVUBLJKXgbKg74b\nrnxfKIraUU2SFOH8vlA+eFcEwax8wj9JKty0gTxyEKZIBQ0/ZnJVx1ubQbReoMDz\n86+hyTMJMRuVJVxCQ/S0qH5f6I6dK8z8PORRewsZ0QKBgQDUL00eQoaNmrnJOEYH\nSNzFhFvhB8w63N/i4Fcy0vfyy0heaaUPYz7tqDoZmz0RFK2cvCLzZYFcVYEV9XMv\ncXrP6lc3s6oQ6aljq251Iijoi+xDe6X3CG+jkhH4/KW27IAZpU71P4HMEjnAENPh\n4hkYIfgDOiX5q4ZYPcjX6+FiCwKBgQC2xE6AZvDb3IpA78os2C5XldP0d676ymBZ\nzhBw+pSGZ8se+2+Qr/t35lGpM9qs4mAMFZY5lecpGU9W6NrkROrtPXvWCacQOmMV\nQXGNnUP1CvXl2Qe4QQbQHem/GiQSqxS7oAEHbV0M8ox8xne/9j13iVMCI1bC5CH8\n3EMZZ8LaUwKBgC1X0l4WD1TxbKRgfy6NVohrCYtkNDOcAcgk8t1skgnzgQqT/u7z\n4X2+BnR0ZS9iQNuOpNVoqqVFrGk545yO3pTR2kOQBFbK6CThfKBRZXaUeC/Pm57X\n0audynNv4iXeEl3oop/sK1ulxWuS7QSHYZ9zmuFtqrHZAsOWqHXj9W0TAoGBAIAw\n2lrHWSLs4e/AAI9Jpd960GqE069F6SS0GuYTa7+F53s4ojzaokervRUvsK5YLUPs\nlCyZzsQN448yze0Txa9W05gBtzLzsPGEsG/CoZqq8GQhwH9k5LFuebe3Txvk8SrU\nhERAWeat7QnLbsyumthP8m/qd31E4+3mVA3qsEnPAoGBAKdjJZAGNO/q3ka7nAO4\nabwKXx899N1NqUpL9MuvhoPheGEqFzcNi5Mhe6H2HSffzrc7ns7YCqqgQuL9+PUS\n3ZrWWFBKA91ewZGyxm6597E13Ub9ts4jXvyxPtid9O5YhgrwEIISZjQU2cHbFdjV\noEnf6qLk5EXPiPU+Uv4b9THv\n-----END PRIVATE KEY-----\n",
+  "client_email": "firebase-adminsdk-431iv@tesis-carlos-vincent.iam.gserviceaccount.com",
+  "client_id": "106008929939197294495",
+  "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+  "token_uri": "https://oauth2.googleapis.com/token",
+  "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
+  "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/firebase-adminsdk-431iv%40tesis-carlos-vincent.iam.gserviceaccount.com"
+}
+
+
