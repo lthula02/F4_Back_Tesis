@@ -1,5 +1,5 @@
 from firebase_admin import db
-from ...graphManager.manager import manageFiles
+from core.graphManager.manager import manageFiles
 from rest_framework.response import Response
 
 
@@ -43,7 +43,7 @@ def createArchitecture(data):
                     'elements': elements
                 }
             ]
-        }    
+        }
         try:
             architectures = addNewArchitecture(elements, new_arch, index, uid)
             return Response(data=architectures)
@@ -105,7 +105,8 @@ def handleDeleteArchitecture(data):
     try:
         architectures = deleteArchitecture(url, arch_index)
         return Response(architectures)
-    except:
+    except err:
+        print(err)
         return Response(data=None, status=500)
 
 
@@ -162,8 +163,8 @@ def handleEditArchitecture(data):
 
 
 def editArchitecture(url, archIndex, archName):
-    """ Editar el nombre de una arquitecturas de la 
-    base de datos del usuario 
+    """ Editar el nombre de una arquitecturas de la
+    base de datos del usuario
 
     Parameters
     ----------

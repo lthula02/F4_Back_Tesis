@@ -23,26 +23,26 @@ def handleEditArchitecture(data):
     list
         lista actualizada con todas las arquitecturas del usuario
     """
-    
+
     uid = data['user_id']
     project_index = data['project_index']
     arch_index = int(data['arch_index'])
-    version_index = data['version_index']
+    version_index = data['ver_index']
     name_ressemblance_umbral = data['name_ressemblance_umbral']
 
     url = '/users/' + uid + '/projects/' + str(project_index)
-    
+
     try:
         architectures = editArchitecture(url, arch_index, version_index, name_ressemblance_umbral)
-        
+
         return Response(data=architectures)
     except:
         return Response(data=None, status=500)
 
 
 def editArchitecture(url, archIndex, versionIndex, name_ressemblance_umbral):
-    """ Editar el nombre de una arquitecturas de la 
-    base de datos del usuario 
+    """ Editar el nombre de una arquitecturas de la
+    base de datos del usuario
 
     Parameters
     ----------
@@ -61,16 +61,17 @@ def editArchitecture(url, archIndex, versionIndex, name_ressemblance_umbral):
     arch_ref = db.reference(url + '/architectures')
     arch_arr = arch_ref.get()
 
+
     #elements = arch_arr[int(archIndex)]['versions'][int(versionIndex)]['elements']
 
     nodes = arch_arr[int(archIndex)]['versions'][int(versionIndex)]['elements']['nodes']
-    
+
     edges = arch_arr[int(archIndex)]['versions'][int(versionIndex)]['elements']['edges']
-   
+
     calculate_metrics(nodes, edges, name_ressemblance_umbral)
     arch_arr[int(archIndex)]['versions'][int(versionIndex)]['elements']['edges'] = edges
     arch_arr[int(archIndex)]['versions'][int(versionIndex)]['elements']['nodes'] = nodes
-    
+
 
     project_ref = db.reference(url)
 

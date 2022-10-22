@@ -163,7 +163,7 @@ def calculateVariableNa(nodes, edge):
     ----------
     nodes: list
         lista con todos los nodos de la arquitectura
-    edge: 
+    edge:
         relacion a la cual se le va a calcular la variable Na
     """
     na = 0
@@ -188,7 +188,7 @@ def calculateVariableNc(nodes, edge):
     ----------
     nodes: list
         lista con todos los nodos de la arquitectura
-    edge: 
+    edge:
         relacion a la cual se le va a calcular la variable Na
     """
     nc = 0
@@ -248,7 +248,7 @@ def calculateVariableCe(edge, edges, nodes):
     ----------
     edges: list
         lista con todas las aristas de la arquitectura
-    edge: 
+    edge:
         relacion a la cual se le va a calcular la variable Ce
     """
     ce = 0
@@ -280,7 +280,7 @@ def calculateVariableCa(edge, edges, nodes):
     ----------
     edges: list
         lista con todas las aristas de la arquitectura
-    edge: 
+    edge:
         relacion a la cual se le va a calcular la variable Ca
     """
     ca = 0
@@ -350,7 +350,7 @@ def getAllEdgesOfSourceNode(node, edges):
 
     Parameters
     ----------
-    node: 
+    node:
         nodo donde estamos parados para comprobar que se trata del nodo de partida de la relación
     edges: list
         lista con todas las aristas de la arquitectura
@@ -514,9 +514,9 @@ def getModule(base):
         Diccionario con la informacion del modulo al que pertenece el archivo
 
     Returns
-    -------  
+    -------
     str
-        Nombre del modulo 
+        Nombre del modulo
     """
     if 'innerclass' in base:
         route = base['innerclass']['#text'].split('::')
@@ -566,7 +566,7 @@ def isAbstractClass(codeLines):
         highlight = line['highlight']
         if type(highlight) is list:
             for h in highlight:
-                if '#text' in h:                                         
+                if '#text' in h:
                     word = h['#text']
                     if word is not None:
                         if word == 'abstract':
@@ -609,7 +609,6 @@ def handleEdgeCreation(base, edges, nodes, node_set, edge_set):
                         createEdge(base, c, relation,
                                    edges, nodes, node_set, edge_set)
                 elif relation == 'extends':
-                    print("ENCONTRE EL EXTENDS")
                     class_name = getClassName(highlight, L)
                     if 'implements' not in class_name:
                         all_classes = handleClassDivision(class_name)
@@ -682,7 +681,7 @@ def getUseClassName(base):
     Returns
     -------
     str
-        nombre de la clase  
+        nombre de la clase
     """
     class_name = ""
 
@@ -781,7 +780,7 @@ def createEdge(base, class_name, relation, edges, nodes, node_set, edge_set):
 
 
 def createNode2(class_name, nodes, node_set):
-    """ Creación del objeto nodo e inclusión en el 
+    """ Creación del objeto nodo e inclusión en el
     arreglo y set de nodos
 
     Parameters

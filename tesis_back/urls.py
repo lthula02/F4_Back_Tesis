@@ -16,7 +16,7 @@ Including another URLconf
 from django.conf.urls import url
 from django.contrib import admin
 from django.urls import path, include
-from apps.metrics.views import Metricas
+from apps.metrics.views import CombineMetrics, Metricas
 from core.views import Login, Proyectos, Arquitecturas, Versiones, Elementos
 
 urlpatterns = [
@@ -27,5 +27,6 @@ urlpatterns = [
     path('arquitecturas/', Arquitecturas.as_view(), name='arquitecturas'),
     path('version/', Versiones.as_view(), name='version'),
     path('elementos/', Elementos.as_view(), name='elementos'),
-    path('metricas/', Metricas.as_view(), name='metricas')
+    path('metricas/', Metricas.as_view(), name='metricas'),
+    path('combine-metrics/', CombineMetrics.as_view(), name='combine_metrics')
 ]
