@@ -1,26 +1,27 @@
-from django.shortcuts import render
-from django.http import JsonResponse
 from rest_framework.views import APIView
 from rest_framework.response import Response
 import jwt
 
 from firebase_admin import credentials, db, initialize_app
 
-from .helpers.proyectos.proyectos import addNewProject, handleRemoveProject, handleEditProject
-from .helpers.arquitecturas.arquitecturas import createArchitecture, handleDeleteArchitecture, handleEditArchitecture
-from .helpers.versiones.versiones import createNewVersion, handleDeleteVersion, handleEditVersion
-from .helpers.elementos.elementos import createElements
+from core.helpers.proyectos.proyectos import addNewProject, handleRemoveProject, handleEditProject
+from core.helpers.arquitecturas.arquitecturas import createArchitecture, handleDeleteArchitecture, handleEditArchitecture
+from core.helpers.versiones.versiones import createNewVersion, handleDeleteVersion, handleEditVersion
+from core.helpers.elementos.elementos import createElements, updatedElements
 
 
 cred = credentials.Certificate('./firebase-sdk.json')
 initialize_app(cred, {
-    'databaseURL': 'https://tesis-carlos-vincent-default-rtdb.firebaseio.com/',
+    'databaseURL': 'https://tesis-carlos-vincent-default-rtdb.firebaseio.com/' ,
 })
 
 
+# 'https://test-tesis-dce1c-default-rtdb.firebaseio.com/
+
+#
 class Login(APIView):
     def post(self, request, *args, **kwargs):
-        """ Solicitud para inicio de sesión de un usuario o 
+        """ Solicitud para inicio de sesión de un usuario o
         crear uno nuevo
         Returns
         -------
@@ -48,7 +49,7 @@ class Proyectos(APIView):
         Returns
         -------
         list
-            una lista actualizada con todos los proyectos del usuario 
+            una lista actualizada con todos los proyectos del usuario
         """
 
         token = request.data['token']
@@ -61,7 +62,7 @@ class Proyectos(APIView):
         Returns
         -------
         list
-            una lista actualizada con todos los proyectos del usuario 
+            una lista actualizada con todos los proyectos del usuario
         """
         token = request.data['token']
         data = jwt.decode(token, 'secret', algorithms=["HS256"])
@@ -96,7 +97,7 @@ class Arquitecturas(APIView):
         return createArchitecture(data)
 
     def delete(self, request, *args, **kwargs):
-        """ Solicitud para eliminar una arquitectura de un 
+        """ Solicitud para eliminar una arquitectura de un
         proyecto de la base de datos del usuario
 
         Returns
@@ -180,3 +181,9 @@ class Elementos(APIView):
         data = request.data
         elems = createElements(data)
         return Response(elems)
+
+class UpdatedElements(APIView):
+  def post(self, request, *args, **kwargs):
+    data = request.data
+    elems = updatedElements(data)
+    return Response(elems)

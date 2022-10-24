@@ -1,6 +1,19 @@
 from firebase_admin import db
-from ...graphManager.manager import getEdgeIds, getNodeIds, manageFiles
+from core.graphManager.manager import getEdgeIds, getNodeIds, manageFiles
 
+
+def updatedElements(data):
+  print('ESTA es la datraasafsbn')
+  print(data)
+  uid = data['user_id']
+  ver_index = data['ver_index']
+  arc_index = data['arc_index']
+  project_index = data['project_index']
+  url = '/users/' + uid + '/projects/' + project_index + \
+        '/architectures/' + arc_index + '/versions/' + ver_index
+  # ver_data = getNodesAndEdges(url)
+  get_elements = getElements(url)
+  return get_elements
 
 def createElements(data):
     """ Manejar la creación de nuevos elementos
@@ -34,7 +47,7 @@ def createElements(data):
 
 
 def getNodesAndEdges(url):
-    """ Obtener los arreglos y sets de los nodos y 
+    """ Obtener los arreglos y sets de los nodos y
     las aristas de una versión
 
     Parameters
@@ -64,7 +77,7 @@ def getNodesAndEdges(url):
 
 
 def addNewElements(url, elems):
-    """ Agregar nuevos elementos a una arquitectura de 
+    """ Agregar nuevos elementos a una arquitectura de
     la base de datos del usuario
 
     Parameters
@@ -84,3 +97,7 @@ def addNewElements(url, elems):
         'elements': elems
     })
     return ver_ref.get()
+
+def getElements(url):
+  ver_ref = db.reference(url)
+  return ver_ref.get()

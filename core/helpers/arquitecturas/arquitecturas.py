@@ -105,8 +105,7 @@ def handleDeleteArchitecture(data):
     try:
         architectures = deleteArchitecture(url, arch_index)
         return Response(architectures)
-    except err:
-        print(err)
+    except:
         return Response(data=None, status=500)
 
 
