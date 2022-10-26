@@ -12,7 +12,7 @@ from core.helpers.elementos.elementos import createElements, updatedElements
 
 cred = credentials.Certificate('./firebase-sdk.json')
 initialize_app(cred, {
-    'databaseURL':'https://test-tesis-dce1c-default-rtdb.firebaseio.com/',
+    'databaseURL':'https://cl-tesis-db-default-rtdb.firebaseio.com/',
 })
 
 # 'https://tesis-carlos-vincent-default-rtdb.firebaseio.com/'
