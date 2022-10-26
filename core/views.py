@@ -12,10 +12,10 @@ from core.helpers.elementos.elementos import createElements, updatedElements
 
 cred = credentials.Certificate('./firebase-sdk.json')
 initialize_app(cred, {
-    'databaseURL': 'https://tesis-carlos-vincent-default-rtdb.firebaseio.com/' ,
+    'databaseURL':'https://test-tesis-dce1c-default-rtdb.firebaseio.com/',
 })
 
-
+# 'https://tesis-carlos-vincent-default-rtdb.firebaseio.com/'
 # 'https://test-tesis-dce1c-default-rtdb.firebaseio.com/
 
 #
@@ -38,7 +38,8 @@ class Login(APIView):
             })
             projects_ref = db.reference('/users/' + user_id + '/projects')
             return Response(projects_ref.get())
-        except:
+        except Exception as e:
+            print(e)
             return Response(status=500)
 
 

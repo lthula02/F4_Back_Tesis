@@ -1,6 +1,8 @@
 from firebase_admin import db
 from rest_framework.response import Response
 
+import random
+
 def handleCombineMetrics(data):
   """ Calcula la combinación de la métricas y actualiza los parámetros de las aristas con su respectiva Q
 
@@ -22,7 +24,8 @@ def handleCombineMetrics(data):
   try:
     combine_metrics = CombineMetrics(url, arch_index, version_index, dms_weight, name_resemblance_weight, coupling_weight, package_mapping_weight)
     return Response(data=combine_metrics)
-  except:
+  except Exception as e:
+    print('Error:', e)
     return Response(data=None, status=500)
 
 def CombineMetrics(url, archIndex, versionIndex, dms_weight, name_resemblance_weight, coupling_weight, package_mapping_weight):
@@ -71,21 +74,30 @@ def handleCreateCompositeComponent(data):
   try:
     composite_components = CreateCompositeComponent(arch_index, version_index, url, umbral_q)
     return Response(data=composite_components)
-  except:
+  except Exception as e:
+    print('Error:', e)
     return Response(status=500)
+
 
 def CreateCompositeComponent(arch_index, version_index, url, umbral_q):
   arch_ref = db.reference(url + '/architectures')
   arch_arr = arch_ref.get()
   edges = arch_arr[int(arch_index)]['versions'][int(version_index)]['elements']['edges']
   nodes = arch_arr[int(arch_index)]['versions'][int(version_index)]['elements']['nodes']
+  elements =  arch_arr[int(arch_index)]['versions'][int(version_index)]['elements']
   update_nodes = CreateListS(nodes, edges, umbral_q)
   arch_arr[int(arch_index)]['versions'][int(version_index)]['elements']['nodes'] = update_nodes
   project_ref = db.reference(url)
+  list_t = CreateListT(nodes)
+  elements.update({
+    'list_t': list_t
+  })
+  arch_arr[int(arch_index)]['versions'][int(version_index)]['elements'] = elements
   project_ref.update({
       'architectures': arch_arr
   })
-  CreateListT(nodes)
+  return list_t
+
 
 def CreateListS(nodes, edges, umbral_q):
   for node in nodes:
@@ -100,37 +112,70 @@ def CreateListS(nodes, edges, umbral_q):
       'list_s': list_S
     }
     node.update(lista)
-    # node['list_s'].update(list_S)
   return nodes
 
 
-def SearchNode(id, nodes):
+def SearchNodeListS(id, nodes):
   for index, node in enumerate(nodes):
     if id == node['data']['id']:
       return index, node['list_s']
 
+  return index, []
+
+def SearchNode(id, nodes):
+  for index, node in enumerate(nodes):
+    if id == node['data']['id']:
+      return node
+
+  return []
+
+def generateColor(colors):
+  hexadecimal = "#"+''.join([random.choice('ABCDEF0123456789') for i in range(6)])
+  if hexadecimal not in colors:
+    colors.append(hexadecimal)
+  else:
+    generateColor(colors)
+  return hexadecimal
+
+def asigneColorCC(list_t, nodes):
+  colors = ['#18202C']
+  for item in list_t:
+    color = generateColor(colors)
+    for item2 in item['composite_component']:
+      node = SearchNode(item2, nodes)
+      node['data'].update({
+        'bg': color,
+        'composite': item['name']
+      })
+
+
 def CreateListT (nodes):
   list_T = []
-  nodes_aux = nodes
-  for index, node in enumerate(nodes_aux):
-    nodes_aux.pop(index)
-    list_s = node['list_s']
+  nodes_aux = []
+  nodes_aux.extend(nodes)
+  for index, node_aux in enumerate(nodes_aux):
+    list_s = node_aux['list_s']
     if len(list_s) > 0:
+      nodes_aux.pop(index)
       for item in list_s:
-        index2, item_list_s= SearchNode(item, nodes_aux)
-        # nodes_aux.pop(index2)
+        index2, item_list_s = SearchNodeListS(item, nodes_aux)
         if len(item_list_s) > 0:
+          nodes_aux.pop(index2)
           for item2 in item_list_s:
-              if item2 not in list_s:
-                list_s.append(item2)
-      list_s.append(node['data']['id'])
+            if item2 not in list_s:
+              list_s.append(item2)
+      list_s.append(node_aux['data']['id'])
       composite_component = {
-        "name": node['data']['id'],
+        "name": node_aux['data']['id'],
         "composite_component": list_s
       }
       list_T.append(composite_component)
-    print(list_T)
+  asigneColorCC(list_T, nodes)
+  print('------------------FINAL----------------------')
+  print(list_T)
+  print(len(nodes))
 
+  return list_T
 
 
 

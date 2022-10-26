@@ -19,6 +19,5 @@ class CombineMetrics(APIView):
 
 class CreateCompositeComponent (APIView):
   def put(self, request, *args, **kwargs):
-    print('BBBBBBBBBBBBBBBBB')
     return handleCreateCompositeComponent(request.data['data'])
 

@@ -1,5 +1,4 @@
-from genericpath import exists
-from ..parser.parser import xmlToJson
+from core.parser.parser import xmlToJson
 from fuzzywuzzy import fuzz
 # from fuzzywuzzy import process
 
@@ -479,7 +478,8 @@ def createNode(base, nodes, node_set):
             "name": class_id,
             "module": module,
             "isAbstract": isAbstract,
-            "isInterface": isInterface
+            "isInterface": isInterface,
+            "bg": '#18202C'
         }
     }
     return node
@@ -762,7 +762,8 @@ def createEdge(base, class_name, relation, edges, nodes, node_set, edge_set):
         "id": source_class_name + "-" + target_class_name,
         "name": source_class_name + "-" + target_class_name,
         "source": source_class_name,
-        "target": target_class_name
+        "target": target_class_name,
+        "bg": '#18202C'
 
     }
     scratch = {
@@ -808,7 +809,8 @@ def createNode2(class_name, nodes, node_set):
             "id": class_name,
             "name": class_name,
             "module": None,
-            "isInterface": flag
+            "isInterface": flag,
+            "bg": '#18202C'
         }
     }
     node_set.add(class_name)

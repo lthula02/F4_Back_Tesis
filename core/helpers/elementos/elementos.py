@@ -3,8 +3,6 @@ from core.graphManager.manager import getEdgeIds, getNodeIds, manageFiles
 
 
 def updatedElements(data):
-  print('ESTA es la datraasafsbn')
-  print(data)
   uid = data['user_id']
   ver_index = data['ver_index']
   arc_index = data['arc_index']
