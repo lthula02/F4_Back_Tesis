@@ -78,6 +78,14 @@ def handleCreateCompositeComponent(data):
     print('Error:', e)
     return Response(status=500)
 
+def resetNodes(nodes):
+  for index, node in enumerate(nodes):
+    if 'list_s' in node:
+      node.pop('list_s')
+
+    node['data'].update({
+      'bg': '#18202C'
+    })
 
 def CreateCompositeComponent(arch_index, version_index, url, umbral_q):
   arch_ref = db.reference(url + '/architectures')
@@ -88,7 +96,7 @@ def CreateCompositeComponent(arch_index, version_index, url, umbral_q):
   update_nodes = CreateListS(nodes, edges, umbral_q)
   arch_arr[int(arch_index)]['versions'][int(version_index)]['elements']['nodes'] = update_nodes
   project_ref = db.reference(url)
-  list_t = CreateListT(nodes)
+  list_t = CreateListT(nodes, elements)
   elements.update({
     'list_t': list_t
   })
@@ -99,7 +107,9 @@ def CreateCompositeComponent(arch_index, version_index, url, umbral_q):
   return list_t
 
 
+
 def CreateListS(nodes, edges, umbral_q):
+  resetNodes(nodes)
   for node in nodes:
     list_S = []
     for edge in edges:
@@ -149,7 +159,9 @@ def asigneColorCC(list_t, nodes):
       })
 
 
-def CreateListT (nodes):
+def CreateListT (nodes, elements):
+  if 'list_t' in elements:
+    elements.pop('list_t')
   list_T = []
   nodes_aux = []
   nodes_aux.extend(nodes)
@@ -171,9 +183,9 @@ def CreateListT (nodes):
       }
       list_T.append(composite_component)
   asigneColorCC(list_T, nodes)
-  print('------------------FINAL----------------------')
-  print(list_T)
-  print(len(nodes))
+  # print('------------------FINAL----------------------')
+  # print(list_T)
+  # print(len(nodes))
 
   return list_T
 
