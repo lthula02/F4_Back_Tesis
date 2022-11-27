@@ -47,9 +47,9 @@ def CombineMetrics(url, archIndex, versionIndex, dms_weight, name_resemblance_we
     sumatoria_x_w = package_mapping_weight*package_mapping_value
     sumatoria_w = name_resemblance_weight  + package_mapping_weight + dms_weight
 
-    if coupling_value >= coupling_weight:
-      sumatoria_x_w = sumatoria_x_w + name_resemblance_weight*name_resemblance_value
-      sumatoria_w = sumatoria_w + coupling_weight
+    # if coupling_value >= coupling_weight:
+    sumatoria_x_w = sumatoria_x_w + name_resemblance_weight*name_resemblance_value
+    sumatoria_w = sumatoria_w + coupling_weight
 
     q = (sumatoria_x_w - (dms_value*dms_weight))/sumatoria_w
     _q = '%.3f' % q
