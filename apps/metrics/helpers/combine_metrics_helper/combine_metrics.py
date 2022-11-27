@@ -41,9 +41,15 @@ def CombineMetrics(url, archIndex, versionIndex, dms_weight, name_resemblance_we
     coupling_value = edge['metrics']['coupling']['value']
     package_mapping_value = edge['metrics']['packageMapping']['value']
 
-    sumatoria_x_w = name_resemblance_weight*name_resemblance_value + coupling_weight*coupling_value + package_mapping_weight*package_mapping_value
+   # + coupling_weight*coupling_value + coupling_weight
 
-    sumatoria_w = name_resemblance_weight + coupling_weight + package_mapping_weight + dms_weight
+
+    sumatoria_x_w = package_mapping_weight*package_mapping_value
+    sumatoria_w = name_resemblance_weight  + package_mapping_weight + dms_weight
+
+    if coupling_value >= coupling_weight:
+      sumatoria_x_w = sumatoria_x_w + name_resemblance_weight*name_resemblance_value
+      sumatoria_w = sumatoria_w + coupling_weight
 
     q = (sumatoria_x_w - (dms_value*dms_weight))/sumatoria_w
     _q = '%.3f' % q
@@ -171,14 +177,16 @@ def CreateListT (nodes, elements):
       nodes_aux.pop(index)
       for item in list_s:
         index2, item_list_s = SearchNodeListS(item, nodes_aux)
+        i = 0
         if len(item_list_s) > 0:
           nodes_aux.pop(index2)
           for item2 in item_list_s:
             if item2 not in list_s:
+              i+=1
               list_s.append(item2)
       list_s.append(node_aux['data']['id'])
       composite_component = {
-        "name": node_aux['data']['id'],
+        "name": 'C' + i,
         "composite_component": list_s
       }
       list_T.append(composite_component)
