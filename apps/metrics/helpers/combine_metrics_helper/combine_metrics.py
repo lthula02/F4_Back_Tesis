@@ -106,6 +106,7 @@ def CreateCompositeComponent(arch_index, version_index, url, umbral_q):
   elements.update({
     'list_t': list_t
   })
+  # Aqui se actualiza la bd
   arch_arr[int(arch_index)]['versions'][int(version_index)]['elements'] = elements
   project_ref.update({
       'architectures': arch_arr
@@ -170,6 +171,7 @@ def CreateListT (nodes, elements):
     elements.pop('list_t')
   list_T = []
   nodes_aux = []
+  aux = 0
   nodes_aux.extend(nodes)
   for index, node_aux in enumerate(nodes_aux):
     list_s = node_aux['list_s']
@@ -184,9 +186,10 @@ def CreateListT (nodes, elements):
               list_s.append(item2)
       list_s.append(node_aux['data']['id'])
       composite_component = {
-        "name": node_aux['data']['id'],
+        "name": "C" + str(aux) ,
         "composite_component": list_s
       }
+      aux +=1
       list_T.append(composite_component)
   asigneColorCC(list_T, nodes)
   # print('------------------FINAL----------------------')
