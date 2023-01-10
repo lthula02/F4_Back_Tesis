@@ -25,10 +25,10 @@ def handleEditName(data):
         })
         break
 
-  # Se actuliza la lista t
+  # Se actualiza la lista t
     arch_arr[int(arch_index)]['versions'][int(version_index)]['elements']['list_t'] = list_t
 
-  # Se actauliza la bd
+  # Se actualiza la bd
     arch_arr[int(arch_index)]['versions'][int(version_index)]['elements'] = elements
     project_ref.update({
       'architectures': arch_arr
@@ -46,4 +46,27 @@ def handleEditNodeCompositeComponent(data):
   version_index = data['ver_index']
   url = '/users/' + uid + '/projects/' + str(project_index)
 
-  # TODO
+  node = data['node']
+  composite_component =  data['composite_component']
+
+  arch_ref = db.reference(url + '/architectures')
+  arch_arr = arch_ref.get()
+
+  list_t = arch_arr[int(arch_index)]['versions'][int(version_index)]['elements']['list_t']
+
+  try:
+      for t in list_t:
+        if t['name'] == composite_component:
+          t['composite_component'].push(node)
+
+
+      arch_arr[int(arch_index)]['versions'][int(version_index)]['elements']['list_t'] = list_t
+
+
+      arch_arr[int(arch_index)]['versions'][int(version_index)]['elements'] = elements
+      project_ref.update({
+      'architectures': arch_arr
+        })
+
+  except Exception as e:
+      print(e)

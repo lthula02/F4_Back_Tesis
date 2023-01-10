@@ -16,7 +16,7 @@ Including another URLconf
 from django.conf.urls import url
 from django.contrib import admin
 from django.urls import path, include
-from apps.metrics.views import CombineMetrics, Metricas, CreateCompositeComponent
+from apps.metrics.views import CombineMetrics, Metricas, CreateCompositeComponent, EditNameCompositeComponent, EditNodeCompositeComponent
 from core.views import Login, Proyectos, Arquitecturas, Versiones, Elementos, UpdatedElements
 
 urlpatterns = [
@@ -30,5 +30,7 @@ urlpatterns = [
      path('updated-elements/', UpdatedElements.as_view(), name='updated_elements'),
     path('metricas/', Metricas.as_view(), name='metricas'),
     path('combine-metrics/', CombineMetrics.as_view(), name='combine_metrics'),
-    path('composite-component/', CreateCompositeComponent.as_view(), name= 'composite_component')
+    path('composite-component/', CreateCompositeComponent.as_view(), name= 'composite_component'),
+    path('edit_cc_name/', EditNameCompositeComponent.as_view(), name= 'edit_cc_name'),
+    path('edit_node_cc/', EditNodeCompositeComponent.as_view(), name= 'edit_node_cc'),
 ]
