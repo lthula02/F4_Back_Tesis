@@ -1,7 +1,7 @@
 from firebase_admin import db
 from rest_framework.response import Response
 
-
+# ! Test
 def handleEditName(data):
   uid = data['user_id']
   project_index = data['project_index']
@@ -38,7 +38,8 @@ def handleEditName(data):
     print('Error:', e)
     # return Response(data=None, status=500)
 
-
+# ! Test
+# Permite editar el componente compuesto al que pertenece un nodo
 def handleEditNodeCompositeComponent(data):
   uid = data['user_id']
   project_index = data['project_index']
@@ -70,3 +71,20 @@ def handleEditNodeCompositeComponent(data):
 
   except Exception as e:
       print(e)
+
+# TODO
+# Genera la tabla de los componentes compuestos
+def handleCompositeComponentBoard(data):
+  try:
+      print(0)
+  except print(0):
+      pass
+
+# TODO
+# ? Hace falta limpiar las tablas
+# Edita la descripción de los componentes compuestos
+def handleEditCompositeComponentDescription(data):
+  try:
+      print(0)
+  except print(0):
+      pass

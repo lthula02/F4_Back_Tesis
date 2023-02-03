@@ -35,5 +35,5 @@ urlpatterns = [
     path('edit_node_cc/', EditNodeCompositeComponent.as_view(), name= 'edit_node_cc'),
 ]
 
-# Este comentario es para probar el deploy de heroku
+
 
