@@ -1,6 +1,6 @@
 from firebase_admin import db
 from rest_framework.response import Response
-
+from apps.metrics.helpers.combine_metrics_helper.combine_metrics import SearchNode
 
 def handleEditName(data):
   uid = data['user_id']
@@ -110,28 +110,42 @@ def handleCompositeComponentBoard(data):
   list_t = arch_arr[int(arch_index)]['versions'][int(version_index)]['elements']['list_t']
 
   try:
+      # Required interfaces
+      ca = []
+      # Provided interfaces
+      ce = []
       for item in list_t:
-        for edge in edges:
-          # Dependencias salientes
-          ce = calculate_ce(edge, edges, nodes)
-          # Dependencias entrantes
-          ca = 0
+        for component in item['composite_component']:
+          for edge in edges:
+            sourceNode = SearchNode(edge['data']['source'], nodes)
+            targetNode = SearchNode(edge['data']['target'], nodes)
 
+            if component == sourceNode['data']['id']:
+               if 'isInterface' in sourceNode and sourceNode['data']['isInterface'] == True and sourceNode['data']['composite'] != targetNode['data']['composite']:
+                  ce.append(edge['scratch']['index'])
 
-      print(0)
-  except print(0):
-      pass
+            if component == targetNode['data']['id']:
+               if 'isInterface' in targetNode and targetNode['data']['isInterface'] == True and targetNode['data']['composite'] != sourceNode['data']['composite']:
+                  ca.append(edge['scratch']['index'])
 
+        item.update({
+            'required_interfaces': ca,
+            'provided_interfaces': ce,
+            'description': ''
+        })
 
+      # Actualizo la lista t
+      arch_arr[int(arch_index)]['versions'][int(version_index)]['elements']['list_t'] = list_t
+      project_ref = db.reference(url)
+      # Actualizo los datos en la base de datos
+      project_ref.update({
+      'architectures': arch_arr
+        })
 
-def calculate_ce(edge, edges, nodes):
-   ce = []
-
-   nodeSource =  edge['data']['source']
-   nodeTarget =  edge['data']['target']
-
-
-
+      return Response(data={'ok': True})
+  except Exception as e:
+      print(e)
+      return Response(data={'ok': False})
 
 # TODO
 # ? Hace falta limpiar las tablas

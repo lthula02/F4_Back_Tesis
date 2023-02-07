@@ -591,7 +591,7 @@ def handleEdgeCreation(base, edges, nodes, node_set, edge_set):
         set pata mantener constancia de las aristas ya creadas
     """
     codeline = base['programlisting']['codeline']
-    for line in codeline:
+    for index, line in enumerate(codeline):
         highlight = line['highlight']
         if highlight:
             if type(highlight) is list:
@@ -607,7 +607,7 @@ def handleEdgeCreation(base, edges, nodes, node_set, edge_set):
                         if c == "":
                             continue
                         createEdge(base, c, relation,
-                                   edges, nodes, node_set, edge_set)
+                                   edges, nodes, node_set, edge_set, index)
                 elif relation == 'extends':
                     class_name = getClassName(highlight, L)
                     if 'implements' not in class_name:
@@ -616,7 +616,7 @@ def handleEdgeCreation(base, edges, nodes, node_set, edge_set):
                             if c == "":
                                 continue
                             createEdge(base, c,
-                                       relation, edges, nodes, node_set, edge_set)
+                                       relation, edges, nodes, node_set, edge_set, index)
                     else:
                         classes = class_name.split('implements')
                         all_extends = handleClassDivision(classes[0])
@@ -631,12 +631,12 @@ def handleEdgeCreation(base, edges, nodes, node_set, edge_set):
                             if c == "":
                                 continue
                             createEdge(base, c,
-                                       relation, edges, nodes, node_set, edge_set)
+                                       relation, edges, nodes, node_set, edge_set, index)
                         for c in all_implements:
                             if c == "":
                                 continue
                             createEdge(base, c,
-                                       "implements", edges, nodes, node_set, edge_set)
+                                       "implements", edges, nodes, node_set, edge_set, index)
             else:
                 if '#text' in highlight:
                     if checkUse(highlight['#text']):
@@ -649,7 +649,7 @@ def handleEdgeCreation(base, edges, nodes, node_set, edge_set):
                             class_name = getUseClassName(highlight['#text'])
 
                         createEdge(base, class_name, relation,
-                                   edges, nodes, node_set, edge_set)
+                                   edges, nodes, node_set, edge_set, index)
 
 
 def checkUse(base):
@@ -734,7 +734,7 @@ def getClassName(base, L):
         return class_name
 
 
-def createEdge(base, class_name, relation, edges, nodes, node_set, edge_set):
+def createEdge(base, class_name, relation, edges, nodes, node_set, edge_set, index):
     """ Creación del objeto arista.
 
     Parameters
@@ -754,6 +754,7 @@ def createEdge(base, class_name, relation, edges, nodes, node_set, edge_set):
     edge_set
         set pata mantener constancia de las aristas ya creadas
     """
+    relation_type = relation[0].upper()
     source_class_name = getClassId(base)
     target_class_name = class_name
     if target_class_name not in node_set:
@@ -766,8 +767,10 @@ def createEdge(base, class_name, relation, edges, nodes, node_set, edge_set):
         "bg": '#18202C'
 
     }
+    relation_type = relation[0].upper()
     scratch = {
-        "relation": relation
+        "relation": relation,
+        "index": relation_type + str(index)
     }
     if data['id'] not in edge_set:
         edges.append({"data": data, "scratch": scratch})
