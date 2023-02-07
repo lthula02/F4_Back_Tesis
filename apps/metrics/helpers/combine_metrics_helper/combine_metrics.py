@@ -158,6 +158,9 @@ def asigneColorCC(list_t, nodes):
   colors = ['#18202C']
   for item in list_t:
     color = generateColor(colors)
+    item.update({
+      'bg': color
+    })
     for item2 in item['composite_component']:
       node = SearchNode(item2, nodes)
       node['data'].update({

@@ -24,9 +24,9 @@ class CreateCompositeComponent (APIView):
 
 class EditNameCompositeComponent (APIView):
    def  put(self, request):
-     return handleEditName(request.data['data'])
+    return handleEditName(request.data['data'])
 
 
 class EditNodeCompositeComponent (APIView):
-  async def put(self, request) :
-    await handleEditNodeCompositeComponent (request.data['data'])
+   def put(self, request):
+    return handleEditNodeCompositeComponent (request.data['data'])

@@ -3,8 +3,6 @@ from rest_framework.response import Response
 
 
 def handleEditName(data):
-  print('data')
-  print(data)
   uid = data['user_id']
   project_index = data['project_index']
   arch_index = int(data['arch_index'])
@@ -19,22 +17,15 @@ def handleEditName(data):
 
   list_t = arch_arr[int(arch_index)]['versions'][int(version_index)]['elements']['list_t']
   nodes = arch_arr[int(arch_index)]['versions'][int(version_index)]['elements']['nodes']
-  print('////////////////////')
-  print(list_t)
-  print('////////////////')
   try:
     for t in list_t:
-      print(t)
-      print(old_name)
       if t['name'] == old_name:
-        print('entroooo')
         t.update({
         'name': str(new_name).upper()
         })
         for node in nodes:
           if(node['data']['id'] in t['composite_component']):
             print(node['data']['id'])
-            print('csts vrs pt 2')
             node['data'].update({
               'composite': str(new_name).upper()
             })
@@ -56,7 +47,7 @@ def handleEditName(data):
     print('Error:', e)
     return Response({"ok":False})
 
-# ! Test
+
 # Permite editar el componente compuesto al que pertenece un nodo
 def handleEditNodeCompositeComponent(data):
   uid = data['user_id']
@@ -77,29 +68,30 @@ def handleEditNodeCompositeComponent(data):
   try:
       for t in list_t:
         if t['name'] == composite_component:
-          t['composite_component'].push(nodeData)
+          t['composite_component'].append(nodeData)
           for node in nodes :
             if(node['data']['id'] == nodeData):
-              if('composite' in node):
-                node['data'].update({
-                  'composite': t['name']
-                })
-              else:
-                node['data'].append({
-                  'composite': t['name']
-                })
-
+              # if('composite' in node):
+              node['data'].update({
+                'composite': t['name'],
+                'bg': t['bg']
+              })
+              # else:
+              #   node['data'].append({
+              #     'composite': t['name']
+              #   })
       arch_arr[int(arch_index)]['versions'][int(version_index)]['elements']['list_t'] = list_t
       arch_arr[int(arch_index)]['versions'][int(version_index)]['elements']['nodes'] = nodes
 
 
-
+      project_ref = db.reference(url)
       project_ref.update({
       'architectures': arch_arr
         })
-
+      return Response(data={'ok': True})
   except Exception as e:
       print(e)
+      return Response(data={'ok': False})
 
 # TODO
 # Genera la tabla de los componentes compuestos
@@ -109,10 +101,37 @@ def handleCompositeComponentBoard(data):
   arch_index = int(data['arch_index'])
   version_index = data['ver_index']
   url = '/users/' + uid + '/projects/' + str(project_index)
+
+  arch_ref = db.reference(url + '/architectures')
+  arch_arr = arch_ref.get()
+
+  edges = arch_arr[int(arch_index)]['versions'][int(version_index)]['elements']['edges']
+  nodes = arch_arr[int(arch_index)]['versions'][int(version_index)]['elements']['nodes']
+  list_t = arch_arr[int(arch_index)]['versions'][int(version_index)]['elements']['list_t']
+
   try:
+      for item in list_t:
+        for edge in edges:
+          # Dependencias salientes
+          ce = calculate_ce(edge, edges, nodes)
+          # Dependencias entrantes
+          ca = 0
+
+
       print(0)
   except print(0):
       pass
+
+
+
+def calculate_ce(edge, edges, nodes):
+   ce = []
+
+   nodeSource =  edge['data']['source']
+   nodeTarget =  edge['data']['target']
+
+
+
 
 # TODO
 # ? Hace falta limpiar las tablas
