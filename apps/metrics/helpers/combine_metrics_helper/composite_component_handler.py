@@ -93,7 +93,7 @@ def handleEditNodeCompositeComponent(data):
       print(e)
       return Response(data={'ok': False})
 
-# TODO
+#! Test
 # Genera la tabla de los componentes compuestos
 def handleCompositeComponentBoard(data):
   uid = data['user_id']
@@ -156,7 +156,22 @@ def handleEditCompositeComponentDescription(data):
   arch_index = int(data['arch_index'])
   version_index = data['ver_index']
   url = '/users/' + uid + '/projects/' + str(project_index)
+
+  cc_name = data['name']
+  description = data['description']
+
+  arch_ref = db.reference(url + '/architectures')
+  arch_arr = arch_ref.get()
+
+  list_t = arch_arr[int(arch_index)]['versions'][int(version_index)]['elements']['list_t']
+
   try:
-      print(0)
-  except print(0):
-      pass
+      for item in list_t:
+        if item['name'] == cc_name:
+           item.update({
+              'description': description
+           })
+      return Response(data={'ok': True})
+  except Exception as e:
+      print(e)
+      return Response(data={'ok': False})

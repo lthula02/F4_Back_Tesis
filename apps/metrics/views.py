@@ -3,9 +3,9 @@ from rest_framework.views import APIView
 from apps.metrics.helpers.manager import *
 from apps.metrics.helpers.manager.manager import handleEditArchitecture
 from apps.metrics.helpers.combine_metrics_helper.combine_metrics import handleCombineMetrics, handleCreateCompositeComponent
-from apps.metrics.helpers.combine_metrics_helper.composite_component_handler import handleEditName, handleEditNodeCompositeComponent
-import jwt
+from apps.metrics.helpers.combine_metrics_helper.composite_component_handler import handleEditName, handleEditNodeCompositeComponent, handleCompositeComponentBoard,handleEditCompositeComponentDescription
 
+import jwt
 # Create your views here.
 class Metricas(APIView):
 
@@ -26,7 +26,14 @@ class EditNameCompositeComponent (APIView):
    def  put(self, request):
     return handleEditName(request.data['data'])
 
-
 class EditNodeCompositeComponent (APIView):
    def put(self, request):
     return handleEditNodeCompositeComponent (request.data['data'])
+
+class CreateCompositeComponentBoard (APIView):
+  def put(self, request):
+    return handleCompositeComponentBoard(request.data['data'])
+
+class EditCompositeComponentDescription (APIView):
+  def put(self, request):
+    return handleEditCompositeComponentDescription(request.data['data'])
