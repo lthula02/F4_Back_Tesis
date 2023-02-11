@@ -121,12 +121,32 @@ def handleCompositeComponentBoard(data):
             targetNode = SearchNode(edge['data']['target'], nodes)
 
             if component == sourceNode['data']['id']:
-               if 'isInterface' in sourceNode and sourceNode['data']['isInterface'] == True and sourceNode['data']['composite'] != targetNode['data']['composite']:
-                  ce.append(edge['scratch']['index'])
+
+               if 'composite' not in targetNode['data']:
+                  composite = ''
+               else:
+                  composite = targetNode['data']['composite']
+               print('1')
+
+               if sourceNode['data']['composite'] != composite:
+                  print(item['name'])
+                  if edge['scratch']['index'] not in ce:
+                    print('2')
+                    ce.append(edge['scratch']['index'])
 
             if component == targetNode['data']['id']:
-               if 'isInterface' in targetNode and targetNode['data']['isInterface'] == True and targetNode['data']['composite'] != sourceNode['data']['composite']:
-                  ca.append(edge['scratch']['index'])
+               print('3')
+
+               if 'composite' not in sourceNode['data']:
+                  composite = ''
+               else:
+                  composite = sourceNode['data']['composite']
+
+               if targetNode['data']['composite'] != composite:
+                  print(item['name'])
+                  if edge['scratch']['index'] not in ca:
+                    print('4')
+                    ca.append(edge['scratch']['index'])
 
         item.update({
             'required_interfaces': ca,
@@ -171,6 +191,12 @@ def handleEditCompositeComponentDescription(data):
            item.update({
               'description': description
            })
+      arch_arr[int(arch_index)]['versions'][int(version_index)]['elements']['list_t'] = list_t
+      project_ref = db.reference(url)
+      # Actualizo los datos en la base de datos
+      project_ref.update({
+      'architectures': arch_arr
+        })
       return Response(data={'ok': True})
   except Exception as e:
       print(e)
