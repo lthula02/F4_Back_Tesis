@@ -93,7 +93,6 @@ def handleEditNodeCompositeComponent(data):
       print(e)
       return Response(data={'ok': False})
 
-#! Test
 # Genera la tabla de los componentes compuestos
 def handleCompositeComponentBoard(data):
   uid = data['user_id']
@@ -109,45 +108,42 @@ def handleCompositeComponentBoard(data):
   nodes = arch_arr[int(arch_index)]['versions'][int(version_index)]['elements']['nodes']
   list_t = arch_arr[int(arch_index)]['versions'][int(version_index)]['elements']['list_t']
 
+  print(len(edges))
+  print(len(nodes))
+  print(len(list_t))
   try:
-      # Required interfaces
-      ca = []
-      # Provided interfaces
-      ce = []
       for item in list_t:
+        # Required interfaces
+        ca = []
+        # Provided interfaces
+        ce = []
+
         for component in item['composite_component']:
           for edge in edges:
             sourceNode = SearchNode(edge['data']['source'], nodes)
             targetNode = SearchNode(edge['data']['target'], nodes)
 
             if component == sourceNode['data']['id']:
-
                if 'composite' not in targetNode['data']:
                   composite = ''
                else:
                   composite = targetNode['data']['composite']
-               print('1')
-
                if sourceNode['data']['composite'] != composite:
-                  print(item['name'])
-                  if edge['scratch']['index'] not in ce:
-                    print('2')
+                  if edge['scratch']['index'] not in ce and edge['scratch']['index'] not in ca:
                     ce.append(edge['scratch']['index'])
 
-            if component == targetNode['data']['id']:
-               print('3')
 
+            if component == targetNode['data']['id']:
                if 'composite' not in sourceNode['data']:
                   composite = ''
                else:
                   composite = sourceNode['data']['composite']
 
                if targetNode['data']['composite'] != composite:
-                  print(item['name'])
-                  if edge['scratch']['index'] not in ca:
-                    print('4')
+                  if edge['scratch']['index'] not in ca and edge['scratch']['index'] not in ce:
                     ca.append(edge['scratch']['index'])
 
+        print('--------NEXT---------')
         item.update({
             'required_interfaces': ca,
             'provided_interfaces': ce,
