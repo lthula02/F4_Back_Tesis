@@ -66,9 +66,36 @@ def handleEditNodeCompositeComponent(data):
   nodes = arch_arr[int(arch_index)]['versions'][int(version_index)]['elements']['nodes']
 
   try:
+      fullNode = SearchNode(nodeData, nodes) # me quede sin nombres jeje
+
+      aux = False
       for t in list_t:
+        # Si el nodo pertenece con anterioridad a otro componente compuesto entonces lo saco de esa lista t
+        if 'composite' in fullNode['data'] and not aux:
+           print('pertenecia a otro componente')
+           for lt in list_t:
+              for index, cc in enumerate(lt['composite_component']):
+                if cc == fullNode['data']['name']:
+                  print('antes 1')
+                  print(lt['composite_component'])
+                  print(lt['name'])
+                  print('se deberia quitar el componente')
+                  lt['composite_component'].pop(index)
+                  aux = True
+                  print('despues 1')
+                  print(lt['composite_component'])
+                  break
+              if aux:
+                 print('BREAK')
+                 break
+
         if t['name'] == composite_component:
+          print('antes 1')
+          print(t['composite_component'])
+          print(t['name'])
           t['composite_component'].append(nodeData)
+          print('antes 2')
+          print(t['composite_component'])
           for node in nodes :
             if(node['data']['id'] == nodeData):
               # if('composite' in node):

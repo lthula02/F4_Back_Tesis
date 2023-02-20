@@ -54,6 +54,7 @@ Django = "==3.1.7"
 PyJWT = "==2.0.1"
 heroku = "*"
 django-heroku = "==0.3.1"
+radius = "*"
 
 [dev-packages]
 

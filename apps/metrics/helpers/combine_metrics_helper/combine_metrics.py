@@ -2,6 +2,8 @@ from firebase_admin import db
 from rest_framework.response import Response
 
 import random
+import math
+import numpy as np
 
 def handleCombineMetrics(data):
   """ Calcula la combinación de la métricas y actualiza los parámetros de las aristas con su respectiva Q
@@ -100,6 +102,7 @@ def CreateCompositeComponent(arch_index, version_index, url, umbral_q):
   nodes = arch_arr[int(arch_index)]['versions'][int(version_index)]['elements']['nodes']
   elements =  arch_arr[int(arch_index)]['versions'][int(version_index)]['elements']
   update_nodes = CreateListS(nodes, edges, umbral_q)
+  updated_edges = CreateEdgeIndex(edges)
   arch_arr[int(arch_index)]['versions'][int(version_index)]['elements']['nodes'] = update_nodes
   project_ref = db.reference(url)
   list_t = CreateListT(nodes, elements)
@@ -113,18 +116,25 @@ def CreateCompositeComponent(arch_index, version_index, url, umbral_q):
   })
   return list_t
 
-
+def CreateEdgeIndex(edges):
+  for index, edge in enumerate(edges):
+    relation_type = edge['scratch']['relation'][0].upper()
+    edge['scratch'].update({
+      "index": relation_type + str(index)
+    })
 
 def CreateListS(nodes, edges, umbral_q):
   resetNodes(nodes)
+  overall_list = []
   for node in nodes:
     list_S = []
     for edge in edges:
       source = edge['data']['source']
       q = edge['metrics']['overall_score_q']['value']
       if source == node['data']['id']:
-        if float(q) >= umbral_q:
+        if float(q) >= umbral_q and edge['data']['target'] not in overall_list:
           list_S.append(edge['data']['target'])
+          overall_list.append(edge['data']['target'])
     lista = {
       'list_s': list_S
     }
@@ -190,7 +200,9 @@ def CreateListT (nodes, elements):
       list_s.append(node_aux['data']['id'])
       composite_component = {
         "name": "C" + str(aux) ,
-        "composite_component": list_s
+        "composite_component": list_s,
+        "offsetX": 800*math.cos(aux*180/np.pi) + aux,
+        "offsetY": 800*math.sin(aux*180/np.pi) + aux
       }
       aux +=1
       list_T.append(composite_component)
