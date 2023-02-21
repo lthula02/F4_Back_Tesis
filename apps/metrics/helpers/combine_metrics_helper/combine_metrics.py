@@ -98,17 +98,24 @@ def resetNodes(nodes):
 def CreateCompositeComponent(arch_index, version_index, url, umbral_q):
   arch_ref = db.reference(url + '/architectures')
   arch_arr = arch_ref.get()
+
   edges = arch_arr[int(arch_index)]['versions'][int(version_index)]['elements']['edges']
   nodes = arch_arr[int(arch_index)]['versions'][int(version_index)]['elements']['nodes']
   elements =  arch_arr[int(arch_index)]['versions'][int(version_index)]['elements']
+
   update_nodes = CreateListS(nodes, edges, umbral_q)
-  updated_edges = CreateEdgeIndex(edges)
+  CreateEdgeIndex(edges)
   arch_arr[int(arch_index)]['versions'][int(version_index)]['elements']['nodes'] = update_nodes
   project_ref = db.reference(url)
+
+  if 'list_t' in elements:
+    elements.pop('list_t')
+
   list_t = CreateListT(nodes, elements)
   elements.update({
     'list_t': list_t
   })
+  
   # Aqui se actualiza la bd
   arch_arr[int(arch_index)]['versions'][int(version_index)]['elements'] = elements
   project_ref.update({
