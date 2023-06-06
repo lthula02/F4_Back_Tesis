@@ -2,15 +2,19 @@ from apps.metrics.helpers.coupling_helper.coupling import calculate_coupling
 from apps.metrics.helpers.abstractness_helper.abstractness import calculate_abstractness
 from apps.metrics.helpers.instability_helper.instability import calculate_instability
 from apps.metrics.helpers.dms_helper.dms import calculate_dms
-from apps.metrics.helpers.package_mapping_helper.package_mapping import calculate_package_mapping
-from apps.metrics.helpers.name_ressemblance_helper.name_ressemblance import claculate_nameResemblance
+from apps.metrics.helpers.package_mapping_helper.package_mapping import (
+    calculate_package_mapping,
+)
+from apps.metrics.helpers.name_ressemblance_helper.name_ressemblance import (
+    claculate_nameResemblance,
+)
 
 from firebase_admin import db
 from rest_framework.response import Response
 
 
 def handleEditArchitecture(data):
-    """ Manejar la edición del nombre de una arquitectura
+    """Manejar la edición del nombre de una arquitectura
     de la base de datos del usuario
 
     Parameters
@@ -24,24 +28,63 @@ def handleEditArchitecture(data):
         lista actualizada con todas las arquitecturas del usuario
     """
 
-    uid = data['user_id']
-    project_index = data['project_index']
-    arch_index = int(data['arch_index'])
-    version_index = data['ver_index']
-    name_ressemblance_umbral = data['name_ressemblance_umbral']
+    uid = data["user_id"]
+    project_index = data["project_index"]
+    arch_index = int(data["arch_index"])
+    version_index = data["ver_index"]
+    name_ressemblance_umbral = data["name_ressemblance_umbral"]
 
-    url = '/users/' + uid + '/projects/' + str(project_index)
+    url = "/users/" + uid + "/projects/" + str(project_index)
 
     try:
-        architectures = editArchitecture(url, arch_index, version_index, name_ressemblance_umbral)
+        architectures = editArchitecture(
+            url, arch_index, version_index, name_ressemblance_umbral
+        )
 
         return Response(data=architectures)
     except:
         return Response(data=None, status=500)
 
 
+def handleEditNode(data):
+    uid = data["user_id"]
+    project_index = data["project_index"]
+    arch_index = int(data["arch_index"])
+    version_index = data["ver_index"]
+    url = "/users/" + uid + "/projects/" + str(project_index)
+
+    node_id = data["node_id"]
+    new_name = data["new_name"]
+
+    arch_ref = db.reference(url + "/architectures")
+    arch_arr = arch_ref.get()
+
+    nodes = arch_arr[int(arch_index)]["versions"][int(version_index)]["elements"][
+        "nodes"
+    ]
+    try:
+        for node in nodes:
+            if node["data"]["id"] == node_id:
+                print(node["data"]["id"])
+                node["data"].update({"description": str(new_name).strip().capitalize()})
+
+        # Se actualizan los nodos
+        arch_arr[int(arch_index)]["versions"][int(version_index)]["elements"][
+            "nodes"
+        ] = nodes
+        # Se actualiza la bd
+        # arch_arr[int(arch_index)]['versions'][int(version_index)]['elements'] = elements
+        project_ref = db.reference(url)
+        project_ref.update({"architectures": arch_arr})
+
+        return Response(data={"ok": True})
+    except Exception as e:
+        print("Error:", e)
+        return Response({"ok": False})
+
+
 def editArchitecture(url, archIndex, versionIndex, name_ressemblance_umbral):
-    """ Editar el nombre de una arquitecturas de la
+    """Editar el nombre de una arquitecturas de la
     base de datos del usuario
 
     Parameters
@@ -58,31 +101,27 @@ def editArchitecture(url, archIndex, versionIndex, name_ressemblance_umbral):
     list
         lista actualizada con todas las arquitecturas del usuario
     """
-    arch_ref = db.reference(url + '/architectures')
+    arch_ref = db.reference(url + "/architectures")
     arch_arr = arch_ref.get()
 
+    # elements = arch_arr[int(archIndex)]['versions'][int(versionIndex)]['elements']
 
-    #elements = arch_arr[int(archIndex)]['versions'][int(versionIndex)]['elements']
+    nodes = arch_arr[int(archIndex)]["versions"][int(versionIndex)]["elements"]["nodes"]
 
-    nodes = arch_arr[int(archIndex)]['versions'][int(versionIndex)]['elements']['nodes']
-
-    edges = arch_arr[int(archIndex)]['versions'][int(versionIndex)]['elements']['edges']
+    edges = arch_arr[int(archIndex)]["versions"][int(versionIndex)]["elements"]["edges"]
 
     calculate_metrics(nodes, edges, name_ressemblance_umbral)
-    arch_arr[int(archIndex)]['versions'][int(versionIndex)]['elements']['edges'] = edges
-    arch_arr[int(archIndex)]['versions'][int(versionIndex)]['elements']['nodes'] = nodes
-
+    arch_arr[int(archIndex)]["versions"][int(versionIndex)]["elements"]["edges"] = edges
+    arch_arr[int(archIndex)]["versions"][int(versionIndex)]["elements"]["nodes"] = nodes
 
     project_ref = db.reference(url)
 
-    project_ref.update({
-        'architectures': arch_arr
-    })
+    project_ref.update({"architectures": arch_arr})
     return arch_arr
 
 
 def calculate_metrics(nodes, edges, name_ressemblance_umbral):
-    """ Se llaman todos los métodos correspondientes al cálculo de métricas
+    """Se llaman todos los métodos correspondientes al cálculo de métricas
 
     Parameters
     ----------
@@ -91,7 +130,7 @@ def calculate_metrics(nodes, edges, name_ressemblance_umbral):
     edges: list
         lista con todas las aristas de la arquitectura
     """
-    #se crea el json vacio 'metrics' para cada relacion
+    # se crea el json vacio 'metrics' para cada relacion
     add_metric_json(edges)
     # incompleteResources
     inComplete_nodes_properties(nodes)
@@ -112,19 +151,13 @@ def calculate_metrics(nodes, edges, name_ressemblance_umbral):
 
 
 def add_metric_json(edges):
-
     for edge in edges:
-
-        test = {
-            'metrics': {
-
-            }
-        }
+        test = {"metrics": {}}
         edge.update(test)
 
 
 def inComplete_nodes_properties(nodes):
-    """ Marca cada nodo como imcompleto si no tiene los recursos necesarios para calcular las métricas
+    """Marca cada nodo como imcompleto si no tiene los recursos necesarios para calcular las métricas
 
     Parameters
     ----------
@@ -133,13 +166,13 @@ def inComplete_nodes_properties(nodes):
     """
     flag = False
     for node in nodes:
-        if 'module' not in node['data'] or 'isAbstract' not in node['data'] or 'isInterface' not in node['data']:
+        if (
+            "module" not in node["data"]
+            or "isAbstract" not in node["data"]
+            or "isInterface" not in node["data"]
+        ):
             flag = True
         else:
             flag = False
-        incomompleteProperties = {
-            'incomompleteProperties': flag
-        }
-        node['data'].update(incomompleteProperties)
-
-
+        incomompleteProperties = {"incomompleteProperties": flag}
+        node["data"].update(incomompleteProperties)

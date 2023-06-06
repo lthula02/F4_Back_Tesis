@@ -1,10 +1,11 @@
 from core.parser.parser import xmlToJson
 from fuzzywuzzy import fuzz
+
 # from fuzzywuzzy import process
 
 
 def manageFiles(files, nodes, edges, node_set, edge_set):
-    """ Leer todos los archivos y manejar la creación de
+    """Leer todos los archivos y manejar la creación de
     sus nodos y relaciones.
 
     Parameters
@@ -21,15 +22,14 @@ def manageFiles(files, nodes, edges, node_set, edge_set):
         set pata mantener constancia de las aristas ya creadas
     """
 
-
     for file in files:
         file_json = xmlToJson(file)
         handleGraphBuild(file_json, nodes, edges, node_set, edge_set)
-    #calculateMetricsVariables(nodes, edges)
+    # calculateMetricsVariables(nodes, edges)
 
 
 def calculateMetricsVariables(nodes, edges):
-    """ Se llaman todos los métodos correspondientes al cálculo de métricas
+    """Se llaman todos los métodos correspondientes al cálculo de métricas
 
     Parameters
     ----------
@@ -57,8 +57,8 @@ def calculateMetricsVariables(nodes, edges):
 
 def claculateNameResemblance(edges):
     for edge in edges:
-        word1 = edge['data']['source']
-        word2 = edge['data']['target']
+        word1 = edge["data"]["source"]
+        word2 = edge["data"]["target"]
         ratio = fuzz.ratio(word1, word2)
         value = 0
 
@@ -67,18 +67,13 @@ def claculateNameResemblance(edges):
         elif ratio > 45:
             value = 1
         ratio = str(ratio) + "%"
-        nameResemblance = {
-            'nameResemblance': {
-                'value': value,
-                'ratio': ratio
-            }
-        }
+        nameResemblance = {"nameResemblance": {"value": value, "ratio": ratio}}
 
-        edge['metrics'].update(nameResemblance)
+        edge["metrics"].update(nameResemblance)
 
 
 def inCompleteResources(nodes):
-    """ Marca cada nodo como imcompleto si no tiene los recursos necesarios para calcular las métricas
+    """Marca cada nodo como imcompleto si no tiene los recursos necesarios para calcular las métricas
 
     Parameters
     ----------
@@ -88,18 +83,20 @@ def inCompleteResources(nodes):
     flag = False
     for node in nodes:
         # aqui no entra
-        if 'module' not in node['data'] or 'isAbstract' not in node['data'] or 'isInterface' not in node['data']:
+        if (
+            "module" not in node["data"]
+            or "isAbstract" not in node["data"]
+            or "isInterface" not in node["data"]
+        ):
             flag = True
         else:
             flag = False
-        incompleteResources = {
-            'incompleteResources': flag
-        }
-        node['data'].update(incompleteResources)
+        incompleteResources = {"incompleteResources": flag}
+        node["data"].update(incompleteResources)
 
 
 def calculateDMS(edges):
-    """ Calcula la métrica Distancia de la secuencia principal que es dependiente de las métricas Abstracción e Inestabilidad
+    """Calcula la métrica Distancia de la secuencia principal que es dependiente de las métricas Abstracción e Inestabilidad
 
     Parameters
     ----------
@@ -107,23 +104,22 @@ def calculateDMS(edges):
         lista con todas las aristas de la arquitectura
     """
     for edge in edges:
-        value = edge['metrics']['abstractness']['value'] + \
-            edge['metrics']['instability']['value'] - 1
+        value = (
+            edge["metrics"]["abstractness"]["value"]
+            + edge["metrics"]["instability"]["value"]
+            - 1
+        )
 
         if value < 0:
             value = value * -1
 
-        DMS = {
-            'DMS': {
-                'value': value
-            }
-        }
+        DMS = {"DMS": {"value": value}}
 
-        edge['metrics'].update(DMS)
+        edge["metrics"].update(DMS)
 
 
 def calculateAbstractness(nodes, edges):
-    """ Calcula de la métrica Abstracción y llama a los métodos de sus variables
+    """Calcula de la métrica Abstracción y llama a los métodos de sus variables
 
     Parameters
     ----------
@@ -143,20 +139,14 @@ def calculateAbstractness(nodes, edges):
             value = na / nc
 
         abstractnessVariables = {
-            'abstractness': {
-                'variables': {
-                    'na': na,
-                    'nc': nc
-                },
-                'value': value
-            }
+            "abstractness": {"variables": {"na": na, "nc": nc}, "value": value}
         }
 
-        edge['metrics'].update(abstractnessVariables)
+        edge["metrics"].update(abstractnessVariables)
 
 
 def calculateVariableNa(nodes, edge):
-    """ Calcula la variable Na de la métrica Abstracción
+    """Calcula la variable Na de la métrica Abstracción
 
     Parameters
     ----------
@@ -167,21 +157,23 @@ def calculateVariableNa(nodes, edge):
     """
     na = 0
     for node in nodes:
-
-        if node['data']['id'] == edge['data']['source']:
-            if ('isInterface' in node['data'] and node['data']['isInterface'] == True) or ('isAbstract' in node['data'] and node['data']['isAbstract'] == True):
-
+        if node["data"]["id"] == edge["data"]["source"]:
+            if (
+                "isInterface" in node["data"] and node["data"]["isInterface"] == True
+            ) or ("isAbstract" in node["data"] and node["data"]["isAbstract"] == True):
                 na = na + 1
 
-        if node['data']['id'] == edge['data']['target']:
-            if ('isInterface' in node['data'] and node['data']['isInterface'] == True) or ('isAbstract' in node['data'] and node['data']['isAbstract'] == True):
+        if node["data"]["id"] == edge["data"]["target"]:
+            if (
+                "isInterface" in node["data"] and node["data"]["isInterface"] == True
+            ) or ("isAbstract" in node["data"] and node["data"]["isAbstract"] == True):
                 na = na + 1
 
     return na
 
 
 def calculateVariableNc(nodes, edge):
-    """ Calcula la variable Nc de la métrica Abstracción
+    """Calcula la variable Nc de la métrica Abstracción
 
     Parameters
     ----------
@@ -194,13 +186,16 @@ def calculateVariableNc(nodes, edge):
     flagSource = False
     flagTarget = False
     for node in nodes:
-        if node['data']['id'] == edge['data']['source']:
-            if 'isAbstract' in node['data'] and node['data']['isAbstract'] != True:
+        if node["data"]["id"] == edge["data"]["source"]:
+            if "isAbstract" in node["data"] and node["data"]["isAbstract"] != True:
                 nc = nc + 1
                 flagSource = True
 
-        if 'isAbstract' in node['data'] and node['data']['id'] == edge['data']['target']:
-            if node['data']['isAbstract'] != True:
+        if (
+            "isAbstract" in node["data"]
+            and node["data"]["id"] == edge["data"]["target"]
+        ):
+            if node["data"]["isAbstract"] != True:
                 nc = nc + 1
                 flagTarget = True
 
@@ -211,7 +206,7 @@ def calculateVariableNc(nodes, edge):
 
 
 def calculateInstability(edges, nodes):
-    """ Calcula de la métrica Inestabilidad y llama a los métodos de sus variables
+    """Calcula de la métrica Inestabilidad y llama a los métodos de sus variables
 
     Parameters
     ----------
@@ -229,19 +224,13 @@ def calculateInstability(edges, nodes):
             value = ce / (ca + ce)
 
         instabilityVariables = {
-            'instability': {
-                'variables': {
-                    'ce': ce,
-                    'ca': ca
-                },
-                'value': value
-            }
+            "instability": {"variables": {"ce": ce, "ca": ca}, "value": value}
         }
-        edge['metrics'].update(instabilityVariables)
+        edge["metrics"].update(instabilityVariables)
 
 
 def calculateVariableCe(edge, edges, nodes):
-    """ Calcula la variable Ce de la métrica Inestabilidad
+    """Calcula la variable Ce de la métrica Inestabilidad
 
     Parameters
     ----------
@@ -251,19 +240,30 @@ def calculateVariableCe(edge, edges, nodes):
         relacion a la cual se le va a calcular la variable Ce
     """
     ce = 0
-    nodeSource = edge['data']['source']
-    nodeTarget = edge['data']['target']
+    nodeSource = edge["data"]["source"]
+    nodeTarget = edge["data"]["target"]
     nodeName = None
     for edgeAux in edges:
-        if edgeAux['data']['source'] == nodeSource and edgeAux['data']['target'] != nodeTarget:
+        if (
+            edgeAux["data"]["source"] == nodeSource
+            and edgeAux["data"]["target"] != nodeTarget
+        ):
             for node in nodes:
-                if node['data']['id'] == edgeAux['data']['target'] and 'isInterface' in node['data'] and node['data']['isInterface']:
+                if (
+                    node["data"]["id"] == edgeAux["data"]["target"]
+                    and "isInterface" in node["data"]
+                    and node["data"]["isInterface"]
+                ):
                     ce = ce + 1
                     nodeSource = "finished"
                     break
-        if edgeAux['data']['source'] == nodeTarget:
+        if edgeAux["data"]["source"] == nodeTarget:
             for node in nodes:
-                if node['data']['id'] == edgeAux['data']['target'] and 'isInterface' in node['data'] and node['data']['isInterface']:
+                if (
+                    node["data"]["id"] == edgeAux["data"]["target"]
+                    and "isInterface" in node["data"]
+                    and node["data"]["isInterface"]
+                ):
                     ce = ce + 1
                     nodeTarget = "finished"
                     break
@@ -273,7 +273,7 @@ def calculateVariableCe(edge, edges, nodes):
 
 
 def calculateVariableCa(edge, edges, nodes):
-    """ Calcula la variable Ca de la métrica Inestabilidad
+    """Calcula la variable Ca de la métrica Inestabilidad
 
     Parameters
     ----------
@@ -283,33 +283,44 @@ def calculateVariableCa(edge, edges, nodes):
         relacion a la cual se le va a calcular la variable Ca
     """
     ca = 0
-    nodeSource = edge['data']['source']
-    nodeTarget = edge['data']['target']
+    nodeSource = edge["data"]["source"]
+    nodeTarget = edge["data"]["target"]
 
     sourceInterface = False
     targetInterface = False
 
     for node in nodes:
-        if node['data']['id'] == nodeSource and 'isInterface' in node['data'] and node['data']['isInterface']:
+        if (
+            node["data"]["id"] == nodeSource
+            and "isInterface" in node["data"]
+            and node["data"]["isInterface"]
+        ):
             sourceInterface = True
-        if node['data']['id'] == nodeTarget and 'isInterface' in node['data'] and node['data']['isInterface']:
+        if (
+            node["data"]["id"] == nodeTarget
+            and "isInterface" in node["data"]
+            and node["data"]["isInterface"]
+        ):
             targetInterface = True
         if sourceInterface and targetInterface:
             break
 
     for edgeAux in edges:
-        if edgeAux['data']['source'] == nodeSource and edgeAux['data']['target'] == nodeTarget:
+        if (
+            edgeAux["data"]["source"] == nodeSource
+            and edgeAux["data"]["target"] == nodeTarget
+        ):
             continue
         else:
-            if edgeAux['data']['target'] == nodeSource and sourceInterface:
+            if edgeAux["data"]["target"] == nodeSource and sourceInterface:
                 ca = ca + 1
-            elif edgeAux['data']['target'] == nodeTarget and targetInterface:
+            elif edgeAux["data"]["target"] == nodeTarget and targetInterface:
                 ca = ca + 1
     return ca
 
 
 def calculatePackageMapping(nodes, edges):
-    """ Calcula la métrica Mapeo de Paquetes
+    """Calcula la métrica Mapeo de Paquetes
 
     Parameters
     ----------
@@ -319,15 +330,23 @@ def calculatePackageMapping(nodes, edges):
         lista con todas las aristas de la arquitectura
     """
     for edge in edges:
-        nameSource = edge['data']['source']
-        nameTarget = edge['data']['target']
+        nameSource = edge["data"]["source"]
+        nameTarget = edge["data"]["target"]
         moduleSource = None
         moduleTarget = None
         for node in nodes:
-            if moduleSource is None and node['data']['id'] == nameSource and 'module' in node['data']:
-                moduleSource = node['data']['module']
-            if moduleTarget is None and node['data']['id'] == nameTarget and 'module' in node['data']:
-                moduleTarget = node['data']['module']
+            if (
+                moduleSource is None
+                and node["data"]["id"] == nameSource
+                and "module" in node["data"]
+            ):
+                moduleSource = node["data"]["module"]
+            if (
+                moduleTarget is None
+                and node["data"]["id"] == nameTarget
+                and "module" in node["data"]
+            ):
+                moduleTarget = node["data"]["module"]
             if moduleSource is not None and moduleTarget is not None:
                 break
         if moduleSource == moduleTarget:
@@ -335,17 +354,13 @@ def calculatePackageMapping(nodes, edges):
         else:
             value = 0
 
-        packageMapping = {
-            'packageMapping': {
-                'value': value
-            }
-        }
+        packageMapping = {"packageMapping": {"value": value}}
 
-        edge['metrics'].update(packageMapping)
+        edge["metrics"].update(packageMapping)
 
 
 def getAllEdgesOfSourceNode(node, edges):
-    """ Guarda todas las relaciones en las cuales el nodo donde estamos parados es el mismo nodo de partida de la relación
+    """Guarda todas las relaciones en las cuales el nodo donde estamos parados es el mismo nodo de partida de la relación
 
     Parameters
     ----------
@@ -357,13 +372,13 @@ def getAllEdgesOfSourceNode(node, edges):
     edgesAux = []
     # Guardar todas las relaciones en las cuales el nodo donde estamos parados es el mismo nodo de partida de la relacion
     for edge in edges:
-        if edge['data']['source'] == node['data']['id']:
+        if edge["data"]["source"] == node["data"]["id"]:
             edgesAux.append(edge)
     return edgesAux
 
 
 def calculateCouplingVariables(edgesAux, nodes):
-    """ Calcula las variables Ni y Nij de la métrica Acoplamiento
+    """Calcula las variables Ni y Nij de la métrica Acoplamiento
 
     Parameters
     ----------
@@ -377,8 +392,11 @@ def calculateCouplingVariables(edgesAux, nodes):
         nij = 0
 
         for node in nodes:
-            if node['data']['id'] == edge['data']['target']:
-                if 'isInterface' in node['data'] and node['data']['isInterface'] == True:
+            if node["data"]["id"] == edge["data"]["target"]:
+                if (
+                    "isInterface" in node["data"]
+                    and node["data"]["isInterface"] == True
+                ):
                     nij = 1
                 break
         value = 0
@@ -388,21 +406,15 @@ def calculateCouplingVariables(edgesAux, nodes):
             value = nij / ni
 
         couplingVariables = {
-            'metrics': {
-                'coupling': {
-                    'variables': {
-                        'nij': nij,
-                        'ni': ni
-                    },
-                    'value': value
-                }
+            "metrics": {
+                "coupling": {"variables": {"nij": nij, "ni": ni}, "value": value}
             }
         }
         edge.update(couplingVariables)
 
 
 def countNumberInterfaces(edgesAux, nodes):
-    """ Cuenta el numero de interfaces presentes en cada relación
+    """Cuenta el numero de interfaces presentes en cada relación
     Parameters
     ----------
     nodes: list
@@ -413,14 +425,17 @@ def countNumberInterfaces(edgesAux, nodes):
     count = 0
     for edge in edgesAux:
         for node in nodes:
-            if node['data']['id'] == edge['data']['target']:
-                if 'isInterface' in node['data'] and node['data']['isInterface'] == True:
+            if node["data"]["id"] == edge["data"]["target"]:
+                if (
+                    "isInterface" in node["data"]
+                    and node["data"]["isInterface"] == True
+                ):
                     count += 1
     return count
 
 
 def handleGraphBuild(json, nodes, edges, node_set, edge_set):
-    """ Inicialización de los nodos y aristas de un archivo
+    """Inicialización de los nodos y aristas de un archivo
 
     Parameters
     ----------
@@ -435,18 +450,18 @@ def handleGraphBuild(json, nodes, edges, node_set, edge_set):
     edge_set
         set pata mantener constancia de las aristas ya creadas
     """
-    base = json['doxygen']['compounddef']
-    if(base['compoundname'] == 'README.md'):
+    base = json["doxygen"]["compounddef"]
+    if base["compoundname"] == "README.md":
         return
     node = createNode(base, nodes, node_set)
     if node is not None:
         nodes.append(node)
-        node_set.add(node['data']['id'])
+        node_set.add(node["data"]["id"])
     handleEdgeCreation(base, edges, nodes, node_set, edge_set)
 
 
 def createNode(base, nodes, node_set):
-    """ Creación del objeto nodo
+    """Creación del objeto nodo
     Parameters
     ----------
     base: dict
@@ -460,16 +475,16 @@ def createNode(base, nodes, node_set):
         diccionario con el objeto nodo creado
     """
     class_id = getClassId(base)
-    isAbstract = isAbstractClass(base['programlisting']['codeline'])
-    isInterface = isInterfaceClass(base['programlisting']['codeline'])
+    isAbstract = isAbstractClass(base["programlisting"]["codeline"])
+    isInterface = isInterfaceClass(base["programlisting"]["codeline"])
     module = getModule(base)
 
     if class_id in node_set:
         for node in nodes:
-            if node['data']['id'] == class_id:
-                node['data']['module'] = module
-                node['data']['isAbstract'] = isAbstract
-                node['data']['isInterface'] = isInterface
+            if node["data"]["id"] == class_id:
+                node["data"]["module"] = module
+                node["data"]["isAbstract"] = isAbstract
+                node["data"]["isInterface"] = isInterface
                 break
         return None
     node = {
@@ -479,14 +494,15 @@ def createNode(base, nodes, node_set):
             "module": module,
             "isAbstract": isAbstract,
             "isInterface": isInterface,
-            "bg": '#18202C'
+            "description": "-",
+            "bg": "#18202C",
         }
     }
     return node
 
 
 def getClassId(base):
-    """ Obtener el ID de la clase del archivo
+    """Obtener el ID de la clase del archivo
 
     que está siendo leído
     Parameters
@@ -499,14 +515,14 @@ def getClassId(base):
     str
         id del nodo
     """
-    class_name = base['compoundname']
-    file_name = class_name.split('.')
+    class_name = base["compoundname"]
+    file_name = class_name.split(".")
     node_id = file_name[0]
     return node_id
 
 
 def getModule(base):
-    """ Obtener el modulo al que pertenece el archivo
+    """Obtener el modulo al que pertenece el archivo
 
     Parameters
     -------
@@ -518,23 +534,23 @@ def getModule(base):
     str
         Nombre del modulo
     """
-    if 'innerclass' in base:
-        route = base['innerclass']['#text'].split('::')
+    if "innerclass" in base:
+        route = base["innerclass"]["#text"].split("::")
         return route[1]
-    elif 'innernamespace' in base:
-        innernamespace = base['innernamespace']
+    elif "innernamespace" in base:
+        innernamespace = base["innernamespace"]
         if type(innernamespace) is list:
-            route = innernamespace[0]['#text'].split('::')
+            route = innernamespace[0]["#text"].split("::")
             return route[len(route) - 1]
         else:
-            route = innernamespace['#text'].split('::')
+            route = innernamespace["#text"].split("::")
             return route[len(route) - 1]
     else:
         return None
 
 
 def isInterfaceClass(codeLines):
-    """ Determina si la clase recibida a través del xml es una interfaz o no
+    """Determina si la clase recibida a través del xml es una interfaz o no
     Parameters
     ----------
     codeLines: list
@@ -543,18 +559,18 @@ def isInterfaceClass(codeLines):
     word = None
     flag = False
     for line in codeLines:
-        highlight = line['highlight']
+        highlight = line["highlight"]
         if type(highlight) is list:
             for h in highlight:
-                if '#text' in h:
-                    word = h['#text']
-                    if word is not None and word == 'interface':
+                if "#text" in h:
+                    word = h["#text"]
+                    if word is not None and word == "interface":
                         flag = True
     return flag
 
 
 def isAbstractClass(codeLines):
-    """ Determina si la clase recibida a través del xml es abstracta o no
+    """Determina si la clase recibida a través del xml es abstracta o no
     Parameters
     ----------
     codeLines: list
@@ -563,19 +579,19 @@ def isAbstractClass(codeLines):
     word = None
     flag = False
     for line in codeLines:
-        highlight = line['highlight']
+        highlight = line["highlight"]
         if type(highlight) is list:
             for h in highlight:
-                if '#text' in h:
-                    word = h['#text']
+                if "#text" in h:
+                    word = h["#text"]
                     if word is not None:
-                        if word == 'abstract':
+                        if word == "abstract":
                             flag = True
     return flag
 
 
 def handleEdgeCreation(base, edges, nodes, node_set, edge_set):
-    """ Manejar la creación de las aristas de un archivo.
+    """Manejar la creación de las aristas de un archivo.
 
     Parameters
     ----------
@@ -590,75 +606,113 @@ def handleEdgeCreation(base, edges, nodes, node_set, edge_set):
     edge_set
         set pata mantener constancia de las aristas ya creadas
     """
-    codeline = base['programlisting']['codeline']
+    codeline = base["programlisting"]["codeline"]
     index_aux = 0
     for index, line in enumerate(codeline):
-        highlight = line['highlight']
+        highlight = line["highlight"]
         if highlight:
             if type(highlight) is list:
                 L = len(highlight)
-                if '#text' in highlight[L-2]:
-                    relation = highlight[L-2]['#text']
+                if "#text" in highlight[L - 2]:
+                    relation = highlight[L - 2]["#text"]
                 if relation is None:
                     continue
-                if relation == 'implements':
+                if relation == "implements":
                     class_name = getClassName(highlight, L)
                     all_classes = handleClassDivision(class_name)
                     for c in all_classes:
                         if c == "":
                             continue
                         index_aux += 1
-                        createEdge(base, c, relation,
-                                   edges, nodes, node_set, edge_set, index_aux)
-                elif relation == 'extends':
+                        createEdge(
+                            base,
+                            c,
+                            relation,
+                            edges,
+                            nodes,
+                            node_set,
+                            edge_set,
+                            index_aux,
+                        )
+                elif relation == "extends":
                     class_name = getClassName(highlight, L)
-                    if 'implements' not in class_name:
+                    if "implements" not in class_name:
                         all_classes = handleClassDivision(class_name)
                         for c in all_classes:
                             if c == "":
                                 continue
                             index_aux += 1
-                            createEdge(base, c,
-                                       relation, edges, nodes, node_set, edge_set, index_aux)
+                            createEdge(
+                                base,
+                                c,
+                                relation,
+                                edges,
+                                nodes,
+                                node_set,
+                                edge_set,
+                                index_aux,
+                            )
                     else:
-                        classes = class_name.split('implements')
+                        classes = class_name.split("implements")
                         all_extends = handleClassDivision(classes[0])
-                        all_implements = ''
-                        if classes[len(classes)-1] == '':
-                            temp_implements = highlight[L-1]['ref']['#text']
-                            all_implements = handleClassDivision(
-                                temp_implements)
+                        all_implements = ""
+                        if classes[len(classes) - 1] == "":
+                            temp_implements = highlight[L - 1]["ref"]["#text"]
+                            all_implements = handleClassDivision(temp_implements)
                         else:
                             all_implements = handleClassDivision(classes[1])
                         for c in all_extends:
                             if c == "":
                                 continue
                             index_aux += 1
-                            createEdge(base, c,
-                                       relation, edges, nodes, node_set, edge_set, index_aux)
+                            createEdge(
+                                base,
+                                c,
+                                relation,
+                                edges,
+                                nodes,
+                                node_set,
+                                edge_set,
+                                index_aux,
+                            )
                         for c in all_implements:
                             if c == "":
                                 continue
                             index_aux += 1
-                            createEdge(base, c,
-                                       "implements", edges, nodes, node_set, edge_set, index_aux)
+                            createEdge(
+                                base,
+                                c,
+                                "implements",
+                                edges,
+                                nodes,
+                                node_set,
+                                edge_set,
+                                index_aux,
+                            )
             else:
-                if '#text' in highlight:
-                    if checkUse(highlight['#text']):
-                        class_name = ''
-                        relation = 'use'
-                        if highlight['#text'] == 'use;':
-                            class_name = getUseClassName(
-                                highlight['ref']['#text'])
+                if "#text" in highlight:
+                    if checkUse(highlight["#text"]):
+                        class_name = ""
+                        relation = "use"
+                        if highlight["#text"] == "use;":
+                            class_name = getUseClassName(highlight["ref"]["#text"])
                         else:
-                            class_name = getUseClassName(highlight['#text'])
+                            class_name = getUseClassName(highlight["#text"])
                         index_aux += 1
-                        createEdge(base, class_name, relation,
-                                   edges, nodes, node_set, edge_set, index_aux)
+                        createEdge(
+                            base,
+                            class_name,
+                            relation,
+                            edges,
+                            nodes,
+                            node_set,
+                            edge_set,
+                            index_aux,
+                        )
 
 
 def checkUse(base):
-    """ Comprobar si la clase está siendo
+    """Comprobar si la clase está siendo
     utilizada
     Parameters
     ----------
@@ -668,14 +722,14 @@ def checkUse(base):
     if len(base) < 3:
         return False
     temp = base[0:3]
-    if temp == 'use':
+    if temp == "use":
         return True
     else:
         return False
 
 
 def getUseClassName(base):
-    """ Obtener el nombre de la clase de
+    """Obtener el nombre de la clase de
     tipo use de un nodo
 
     Parameters
@@ -695,17 +749,17 @@ def getUseClassName(base):
             break
         class_name = c + class_name
 
-    if class_name[len(class_name)-1] == ';':
-        class_name = class_name[0:len(class_name)-1]
+    if class_name[len(class_name) - 1] == ";":
+        class_name = class_name[0 : len(class_name) - 1]
 
-    if class_name[0:3] == 'use':
-        class_name = class_name[3:len(class_name)]
+    if class_name[0:3] == "use":
+        class_name = class_name[3 : len(class_name)]
     # Casos Aislados
     if class_name == "ContainerInterfaceasPsrInterface":
-        class_name = 'PsrInterface'
+        class_name = "PsrInterface"
 
     if class_name == "ContainerInterfaceasPsrContainerInterface":
-        class_name = 'PsrInterface'
+        class_name = "PsrInterface"
 
     if class_name == "ConsoleInputasConsoleInputBase":
         class_name = "ConsoleInputBase"
@@ -717,7 +771,7 @@ def getUseClassName(base):
 
 
 def getClassName(base, L):
-    """ Obtener el nombre de la clase de un nodo
+    """Obtener el nombre de la clase de un nodo
 
     Parameters
     ----------
@@ -732,15 +786,15 @@ def getClassName(base, L):
         nombre de la clase
     """
     try:
-        class_name = base[L-1]['#text']
+        class_name = base[L - 1]["#text"]
         return class_name
     except:
-        class_name = base[L-1]['ref']['#text']
+        class_name = base[L - 1]["ref"]["#text"]
         return class_name
 
 
 def createEdge(base, class_name, relation, edges, nodes, node_set, edge_set, index):
-    """ Creación del objeto arista.
+    """Creación del objeto arista.
 
     Parameters
     ----------
@@ -769,27 +823,26 @@ def createEdge(base, class_name, relation, edges, nodes, node_set, edge_set, ind
         "name": source_class_name + "-" + target_class_name,
         "source": source_class_name,
         "target": target_class_name,
-        "bg": '#18202C'
-
+        "bg": "#18202C",
     }
     # relation_type = relation[0].upper()
     scratch = {
         "relation": relation,
         # "index": relation_type + str(index + 1)
     }
-    if data['id'] not in edge_set:
+    if data["id"] not in edge_set:
         edges.append({"data": data, "scratch": scratch})
-        edge_set.add(data['id'])
+        edge_set.add(data["id"])
     else:
-        if scratch['relation'] != 'use':
+        if scratch["relation"] != "use":
             for i in range(len(edges)):
-                if edges[i]['data'] == data:
-                    edges[i]['scratch'] = scratch
+                if edges[i]["data"] == data:
+                    edges[i]["scratch"] = scratch
                     break
 
 
 def createNode2(class_name, nodes, node_set):
-    """ Creación del objeto nodo e inclusión en el
+    """Creación del objeto nodo e inclusión en el
     arreglo y set de nodos
 
     Parameters
@@ -818,7 +871,8 @@ def createNode2(class_name, nodes, node_set):
             "name": class_name,
             "module": None,
             "isInterface": flag,
-            "bg": '#18202C'
+            "description": "-",
+            "bg": "#18202C",
         }
     }
     node_set.add(class_name)
@@ -827,7 +881,7 @@ def createNode2(class_name, nodes, node_set):
 
 
 def handleClassDivision(class_name):
-    """ Obtención de un arreglo con todas las clases
+    """Obtención de un arreglo con todas las clases
     relacionadas con un nodo
 
     Parameters
@@ -846,7 +900,7 @@ def handleClassDivision(class_name):
 
 
 def getNodeIds(nodes):
-    """ Obtención del set con todos los nodos de
+    """Obtención del set con todos los nodos de
     una arquitectura.
 
     Parameters
@@ -861,12 +915,12 @@ def getNodeIds(nodes):
     """
     node_ids = set()
     for node in nodes:
-        node_ids.add(node['data']['id'])
+        node_ids.add(node["data"]["id"])
     return node_ids
 
 
 def getEdgeIds(edges):
-    """" Obtención del set con todas las aristas
+    """ " Obtención del set con todas las aristas
     de una arquitectura.
 
     Parameters
@@ -881,5 +935,5 @@ def getEdgeIds(edges):
     """
     edge_ids = set()
     for edge in edges:
-        edge_ids.add(edge['data']['id'])
+        edge_ids.add(edge["data"]["id"])
     return edge_ids
