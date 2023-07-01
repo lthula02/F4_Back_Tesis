@@ -119,7 +119,7 @@ def handlesclogical(sclist, mlist):
 
     # Eliminamos padres repetidos
     parentlist = list(set(parentlist))
-    print(f"PARENTLIST => {parentlist}")
+    # print(f"PARENTLIST => {parentlist}")
 
     for p in parentlist:
         sonlist = []
@@ -157,10 +157,10 @@ def handlesclogical(sclist, mlist):
                             sources.append(i["source"])
                             if p["son_list"].count(i) != 1:
                                 xor = False
-                        print("------------------------------------")
-                        print(sc["description"])
-                        print(list(set(sources)))
-                        print("------------------------------------")
+                        # print("------------------------------------")
+                        # print(sc["description"])
+                        # print(list(set(sources)))
+                        # print("------------------------------------")
                         if xor and (len(list(set(sources))) > 1):
                             sc["logical"] = "xor"
 

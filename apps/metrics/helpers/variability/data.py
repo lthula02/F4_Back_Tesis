@@ -46,13 +46,12 @@ def handleVariabilityDiagram(data):
 
             if composite_name in composite_components_data:
                 composite_components_data[composite_name]["composite_component"].append(
-                    {"name": node_key, "description": node_description}
+                    {"name": str(node_key), "description": node_description}
                 )
 
         archs.append(list(composite_components_data.values()))
 
     # Retornar la lista de arquitecturas
-    print(archs)
     return archs
 
 

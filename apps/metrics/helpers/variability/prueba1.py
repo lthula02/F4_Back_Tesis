@@ -2,6 +2,8 @@ import graphviz
 import os
 from apps.metrics.helpers.variability.data import handleVariabilityDiagram
 from apps.metrics.helpers.variability.vardatahandler import handleccdesc
+from apps.metrics.helpers.variability.vardatahandler import handlescdesc
+
 
 import time
 
@@ -118,7 +120,6 @@ def creategraph(graph, cclist, sclist):
 
 
 def initVariabilityDiagram(data):
-    print("llegue a initVariabilityDiagram")
     name = "Prueba"
     # Contador de número de gráficos generados para crear el nombre del pdf
     cont = 0
@@ -132,7 +133,7 @@ def initVariabilityDiagram(data):
     graph = graphviz.Graph("Grafo", filename=filename)
 
     archs = handleVariabilityDiagram(data)
-    scnodes = handleccdesc(archs)
+    scnodes = handlescdesc(archs)
     ccnodes = handleccdesc(archs)
 
     # crear nodo cabeza
