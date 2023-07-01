@@ -23,6 +23,7 @@ def handleVariabilityDiagram(data):
         list_t_ref = versions_ref.child(str(latest_version_index)).child(
             "elements/list_t"
         )
+
         composite_components = list_t_ref.get()
 
         nodes_ref = versions_ref.child(str(latest_version_index)).child(
@@ -30,7 +31,7 @@ def handleVariabilityDiagram(data):
         )
         nodes = nodes_ref.get()
 
-        for component_key, component_data in composite_components.items():
+        for component_data in composite_components:
             component_name = component_data["name"]
             composite_components_data[component_name] = {
                 "name": component_name,
@@ -38,9 +39,9 @@ def handleVariabilityDiagram(data):
                 "composite_component": [],  # Se asignará más adelante
             }
 
-        for node_key, node_data in nodes.items():
+        for node_key, node_data in enumerate(nodes):
             node_description = node_data["data"]["description"]
-            composite_name = node_data["data"]["composite"]
+            composite_name = node_data["data"].get("composite")
             composite_components_description[node_key] = node_description
 
             if composite_name in composite_components_data:
@@ -51,6 +52,7 @@ def handleVariabilityDiagram(data):
         archs.append(list(composite_components_data.values()))
 
     # Retornar la lista de arquitecturas
+    print(archs)
     return archs
 
 
