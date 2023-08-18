@@ -822,7 +822,9 @@ def createEdge(base, class_name, relation, edges, nodes, node_set, edge_set, ind
         "id": source_class_name + "-" + target_class_name,
         "name": source_class_name + "-" + target_class_name,
         "source": source_class_name,
+        "source_component": "n/a",  # Esto fue agregado en la 4 fase para identificar de qué componente compuesto proviene el simple
         "target": target_class_name,
+        "target_component": "n/a",  # importante mencionar que el n/a se actualizará al crear los componentes compuestos en el front
         "bg": "#18202C",
     }
     # relation_type = relation[0].upper()
