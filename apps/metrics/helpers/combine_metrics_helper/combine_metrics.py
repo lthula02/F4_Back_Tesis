@@ -149,19 +149,34 @@ def CreateEdgeIndex(edges):
 
 
 def CreateListS(nodes, edges, umbral_q):
+    # Se agregaron las actualizaciones de componentes en edges para utilizar un solo bucle for
     resetNodes(nodes)
     overall_list = []
+
     for node in nodes:
         list_S = []
+        node_id = node["data"]["id"]
         for edge in edges:
-            source = edge["data"]["source"]
             q = edge["metrics"]["overall_score_q"]["value"]
-            if source == node["data"]["id"]:
+
+            source = edge["data"]["source"]
+            if source == node_id:
                 if float(q) >= umbral_q and edge["data"]["target"] not in overall_list:
                     list_S.append(edge["data"]["target"])
                     overall_list.append(edge["data"]["target"])
+
+                # Actualizar el componente compuesto de source en edges
+                if "composite" in node["data"]:
+                    edge["data"]["source_component"] = node["data"]["composite"]
+
+            # Actualizar el componente compuesto de target en edges
+            target = edge["data"]["target"]
+            if target == node_id and "composite" in node["data"]:
+                edge["data"]["target_component"] = node["data"]["composite"]
+
         lista = {"list_s": list_S}
         node.update(lista)
+
     return nodes
 
 

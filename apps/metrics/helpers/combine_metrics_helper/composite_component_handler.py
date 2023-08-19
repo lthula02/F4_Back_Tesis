@@ -16,24 +16,21 @@ def extractData(data, l, n, e, update):
     arch_ref = db.reference(url + "/architectures")
     arch_arr = arch_ref.get()
 
-    needed = {"list_t": None, "nodes": None, "edges": None}
+    result = {"list_t": None, "nodes": None, "edges": None}
 
-    if l == True:
-        list_t = arch_arr[int(arch_index)]["versions"][int(version_index)]["elements"][
-            "list_t"
-        ]
-        needed["list_t"] = list_t
-    if n == True:
-        nodes = arch_arr[int(arch_index)]["versions"][int(version_index)]["elements"][
-            "nodes"
-        ]
-        needed["nodes"] = nodes
-    if e == True:
-        edges = arch_arr[int(arch_index)]["versions"][int(version_index)]["elements"][
-            "edges"
-        ]
-        needed["edges"] = edges
-    if update == True:
+    if l:
+        result["list_t"] = arch_arr[int(arch_index)]["versions"][int(version_index)][
+            "elements"
+        ]["list_t"]
+    if n:
+        result["nodes"] = arch_arr[int(arch_index)]["versions"][int(version_index)][
+            "elements"
+        ]["nodes"]
+    if e:
+        result["edges"] = arch_arr[int(arch_index)]["versions"][int(version_index)][
+            "elements"
+        ]["edges"]
+    if update:
         update_data = {
             "arch_arr": arch_arr,
             "arch_index": arch_index,
@@ -42,9 +39,10 @@ def extractData(data, l, n, e, update):
         }
         return update_data
 
-    return needed
+    return result
 
 
+# Esta función actualiza los datos en la base de datos
 def updateData(data, list_t, nodes, edges):
     d = extractData(data, False, False, False, True)
     try:
@@ -142,6 +140,31 @@ def handleEditNodeCompositeComponent(data):
         return Response(data={"ok": False})
 
 
+""" 
+ Actualiza en edges (las relaciones) los componentes compuestos de cada nodo
+ Especifica de que cc viene el nodo origen y el nodo destino 
+ - edges: lista de aristas en la base de datos
+ - nodes: diccionario de nodos en la base de datos
+"""
+
+
+def updateEdgesNodesCompositeComponent(edges, nodes):
+    # Actualizar source_component y target_component en edges
+    for edge in edges:
+        source_node_id = edge["data"]["source"]
+        target_node_id = edge["data"]["target"]
+        if source_node_id in nodes and "composite" in nodes[source_node_id]["data"]:
+            edge["data"]["source_component"] = nodes[source_node_id]["data"][
+                "composite"
+            ]
+        if target_node_id in nodes and "composite" in nodes[target_node_id]["data"]:
+            edge["data"]["target_component"] = nodes[target_node_id]["data"][
+                "composite"
+            ]
+
+    return edges
+
+
 # Genera la tabla de los componentes compuestos
 def handleCompositeComponentBoard(data):
     dataNeeded = extractData(data, True, True, True, False)
@@ -216,22 +239,3 @@ def handleEditCompositeComponentDescription(data):
     except Exception as e:
         print(e)
         return Response(data={"ok": False})
-
-
-# Actualiza en edges (las relaciones) los componentes compuestos de cada nodo
-# Especifica de que cc viene el nodo origen y el nodo destino
-def updateEdgesNodesCompositeComponent(edges, nodes):
-    # Actualizar source_component y target_component en edges
-    for edge in edges:
-        source_node_id = edge["data"]["source"]
-        target_node_id = edge["data"]["target"]
-        if source_node_id in nodes and "composite" in nodes[source_node_id]["data"]:
-            edge["data"]["source_component"] = nodes[source_node_id]["data"][
-                "composite"
-            ]
-        if target_node_id in nodes and "composite" in nodes[target_node_id]["data"]:
-            edge["data"]["target_component"] = nodes[target_node_id]["data"][
-                "composite"
-            ]
-
-    return edges
