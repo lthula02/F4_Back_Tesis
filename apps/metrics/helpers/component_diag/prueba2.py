@@ -29,8 +29,8 @@ def initComponentDiagram(data):
     # graph.attr("splines", "line")
     # Add nodes to the graph
 
-    compdata = handleComponentData(data)
-    count_aspects(compdata)
+    archs_compdata = handleComponentData(data)
+    compdata = count_aspects(archs_compdata)
 
     # Creación de nodos
 
@@ -90,7 +90,7 @@ def initComponentDiagram(data):
     for d in compdata:
         name = d["name"]
         cnt = str(d["count"])
-        total = len(compdata)
+        total = len(archs_compdata)
         auxtext += f"{name}: {cnt}/{total}\n"
 
     graph.graph_attr["fontsize"] = "8"

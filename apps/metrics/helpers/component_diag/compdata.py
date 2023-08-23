@@ -1,56 +1,63 @@
 from firebase_admin import db
 
-"""
-Compdata debería tener una estructura como la siguiente
-
-compdata = [
-{
-    'name': 'Transmisión',
-    'requires': ['Entretenimiento', 'Confort']
-},
-{
-    'name': 'Entretenimiento',
-    'requires': ['Confort']
-},
-{
-    'name': 'Confort',
-    'requires': []
-}
-
-]
-"""
-
 
 def handleComponentData(data):
-    print("Llegue a compdata")
-    print(data)
     uid = data["user_id"]
     project_index = data["project_index"]
-    arch_index = int(data["arch_index"])
-    version_index = data["ver_index"]
     url = "/users/" + uid + "/projects/" + str(project_index)
 
-    arch_ref = db.reference(url + "/architectures")
-    arch_arr = arch_ref.get()
+    architectures_ref = db.reference(url + "/architectures")
+    architectures_data = architectures_ref.get()
+    num_architectures = len(architectures_data)
 
-    edges = arch_arr[int(arch_index)]["versions"][int(version_index)]["elements"][
-        "edges"
-    ]
+    archs_compdata = {}
 
-    compdata_dict = {}  # Diccionario para almacenar la información temporalmente
+    for arch_index in range(num_architectures):
+        name_ref = architectures_ref.child(str(arch_index)).child("name")
+        architecture_name = name_ref.get()
+        versions_ref = architectures_ref.child(str(arch_index)).child("versions")
+        versions_data = versions_ref.get()
+        latest_version_index = len(versions_data) - 1
 
-    for edge in edges:
-        source_component = edge["data"]["source_component"]
-        target_component = edge["data"]["target_component"]
+        edges_ref = versions_ref.child(str(latest_version_index)).child(
+            "elements/edges"
+        )
+        edges = edges_ref.get()
 
-        if source_component not in compdata_dict:
-            compdata_dict[source_component] = set()
+        compdata_dict = {}  # Diccionario para almacenar la información temporalmente
 
-        compdata_dict[source_component].add(target_component)
+        for edge in edges:
+            print(edge["data"]["source_component"])
+            source_component = edge["data"]["source_component"]
+            target_component = edge["data"]["target_component"]
+            if source_component != "n/a" and target_component != "n/a":
+                if source_component not in compdata_dict:
+                    compdata_dict[source_component] = set()
 
-    compdata = []
+                if target_component != source_component:
+                    compdata_dict[source_component].add(target_component)
 
-    for source, targets in compdata_dict.items():
-        compdata.append({"name": source, "requires": list(targets)})
+        arch_comp = []
+        for source, targets in compdata_dict.items():
+            arch_comp.append({"name": source, "requires": list(targets)})
+        archs_compdata[architecture_name] = arch_comp
 
-    return compdata
+    return archs_compdata
+
+
+"""
+De esta forma se debería ver archs_compdata:
+
+archs_compdata = {
+    "Architecture_1": [
+        {"name": "Component_A", "requires": ["Component_B", "Component_C"]},
+        {"name": "Component_B", "requires": ["Component_C"]},
+        {"name": "Component_C", "requires": []}
+    ],
+    "Architecture_2": [
+        {"name": "Component_X", "requires": ["Component_Y"]},
+        {"name": "Component_Y", "requires": []}
+    ],
+    # ... más arquitecturas ...
+}
+"""
