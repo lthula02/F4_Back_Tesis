@@ -90,7 +90,7 @@ def initComponentDiagram(data):
     for d in compdata:
         name = d["name"]
         cnt = str(d["count"])
-        total = len(cars)
+        total = len(compdata)
         auxtext += f"{name}: {cnt}/{total}\n"
 
     graph.graph_attr["fontsize"] = "8"

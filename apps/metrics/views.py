@@ -51,14 +51,14 @@ class EditNodeDescription(APIView):
         return handleEditNode(request.data["data"])
 
 
-class CreateVariabilityDiagram(APIView):
-    def put(self, request):
-        return initVariabilityDiagram(request.data["data"])
-
-
 class CreateComponentDiagram(APIView):
     def put(self, request):
         return initComponentDiagram(request.data["data"])
+
+
+class CreateVariabilityDiagram(APIView):
+    def put(self, request):
+        return initVariabilityDiagram(request.data["data"])
 
 
 class CreateCompositeComponentBoard(APIView):

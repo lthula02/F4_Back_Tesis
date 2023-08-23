@@ -22,6 +22,7 @@ from apps.metrics.views import (
     EditNameCompositeComponent,
     EditNodeCompositeComponent,
     EditNodeDescription,
+    CreateComponentDiagram,
     CreateVariabilityDiagram,
     CreateCompositeComponentBoard,
     EditCompositeComponentDescription,
@@ -58,6 +59,11 @@ urlpatterns = [
         r"^edit_node_cc/", EditNodeCompositeComponent.as_view(), name="edit_node_cc"
     ),
     re_path(r"^edit_node_desc/", EditNodeDescription.as_view(), name="edit_node_desc"),
+    re_path(
+        r"^create_comp_diagram/",
+        CreateComponentDiagram.as_view(),
+        name="create_comp_diagram",
+    ),
     re_path(
         r"^create_var_diagram/",
         CreateVariabilityDiagram.as_view(),

@@ -22,6 +22,8 @@ compdata = [
 
 
 def handleComponentData(data):
+    print("Llegue a compdata")
+    print(data)
     uid = data["user_id"]
     project_index = data["project_index"]
     arch_index = int(data["arch_index"])
