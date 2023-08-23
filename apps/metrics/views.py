@@ -3,6 +3,7 @@ from rest_framework.views import APIView
 from apps.metrics.helpers.manager import *
 from apps.metrics.helpers.manager.manager import handleEditArchitecture, handleEditNode
 from apps.metrics.helpers.variability.prueba1 import initVariabilityDiagram
+from apps.metrics.helpers.component_diag.prueba2 import initComponentDiagram
 from apps.metrics.helpers.combine_metrics_helper.combine_metrics import (
     handleCombineMetrics,
     handleCreateCompositeComponent,
@@ -53,6 +54,11 @@ class EditNodeDescription(APIView):
 class CreateVariabilityDiagram(APIView):
     def put(self, request):
         return initVariabilityDiagram(request.data["data"])
+
+
+class CreateComponentDiagram(APIView):
+    def put(self, request):
+        return initComponentDiagram(request.data["data"])
 
 
 class CreateCompositeComponentBoard(APIView):

@@ -1,6 +1,6 @@
 import graphviz
 import os
-from apps.metrics.helpers.variability.data import handleVariabilityDiagram
+from apps.metrics.helpers.variability.data import handleVariabilityData
 from apps.metrics.helpers.variability.vardatahandler import handleccdesc
 from apps.metrics.helpers.variability.vardatahandler import handlescdesc
 
@@ -132,7 +132,7 @@ def initVariabilityDiagram(data):
     # Crea el grafo
     graph = graphviz.Graph("Grafo", filename=filename)
 
-    archs = handleVariabilityDiagram(data)
+    archs = handleVariabilityData(data)
     scnodes = handlescdesc(archs)
     ccnodes = handleccdesc(archs)
 

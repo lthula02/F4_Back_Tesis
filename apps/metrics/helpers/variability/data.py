@@ -1,7 +1,7 @@
 from firebase_admin import db
 
 
-def handleVariabilityDiagram(data):
+def handleVariabilityData(data):
     uid = data["user_id"]
     project_index = data["project_index"]
     url = "/users/" + uid + "/projects/" + str(project_index)
