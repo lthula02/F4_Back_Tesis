@@ -145,6 +145,11 @@ def handleEditNodeCompositeComponent(data):
  Especifica de que cc viene el nodo origen y el nodo destino 
  - edges: lista de aristas en la base de datos
  - nodes: diccionario de nodos en la base de datos
+
+ Fijese que se actualiza source y target con el valor de "composite" del nodo,
+ es por esto que en la función handleEditCompositeComponentDescription se inserta
+ la nueva descripción en esta clave del nodo, intercambiando el nombre, para poder
+ generar el diagrama de componentes con los nombres de aspecto
 """
 
 
@@ -220,20 +225,35 @@ def handleCompositeComponentBoard(data):
 
 # TODO
 # ? Hace falta limpiar las tablas
-# Edita la descripción de los componentes compuestos
+# Edita la descripción (aspectos) de los componentes compuestos
 def handleEditCompositeComponentDescription(data):
-    dataNeeded = extractData(data, True, False, False, False)
+    dataNeeded = extractData(data, True, True, True, False)
     list_t = dataNeeded["list_t"]
+    nodes_list = dataNeeded["nodes"]
+
+    # Convertir la lista de nodos a un diccionario para búsqueda eficiente
+    node_dict = {node["data"]["id"]: node for node in nodes_list}
 
     cc_name = data["name"]
-    description = data["description"]
+    new_description = data["description"]
 
     try:
         for item in list_t:
             if item["name"] == cc_name:
-                item.update({"description": description})
+                old_description = item.get("description", "")
+                item.update({"description": new_description})
 
-        updateData(data, list_t, None, None)
+                # Actualizar la clave "composite" en el diccionario de nodos
+                # Esto se añade para que el nombre de aspecto (descripción) esté en composite en vez del nombre id (C0, por ejemplo)
+                for node_id, node in node_dict.items():
+                    if "composite" in node["data"]:
+                        if node["data"]["composite"] == old_description:
+                            node["data"]["composite"] = new_description
+                        elif node["data"]["composite"] == cc_name:
+                            node["data"]["composite"] = new_description
+
+        edges = updateEdgesNodesCompositeComponent(dataNeeded["edges"], node_dict)
+        updateData(data, list_t, nodes_list, edges)  # Actualizar también los nodos
 
         return Response(data={"ok": True})
     except Exception as e:
