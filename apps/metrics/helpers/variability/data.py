@@ -30,27 +30,35 @@ def handleVariabilityData(data):
             "elements/nodes"
         )
         nodes = nodes_ref.get()
-
+        n = 0
         for component_data in composite_components:
             component_name = component_data["name"]
-            composite_components_data[component_name] = {
+            component_desc = component_data["description"]
+
+            key = component_name
+            if component_desc != "-":
+                key = component_desc  # si el nombre de aspecto del cc existe, se usará ese valor
+
+            composite_components_data[key] = {
                 "name": component_name,
-                "description": "",  # Se asignará más adelante
+                "description": component_desc,
                 "composite_component": [],  # Se asignará más adelante
             }
 
         for node_key, node_data in enumerate(nodes):
+            node_name = node_data["data"]["id"]
             node_description = node_data["data"]["description"]
             composite_name = node_data["data"].get("composite")
             composite_components_description[node_key] = node_description
 
             if composite_name in composite_components_data:
                 composite_components_data[composite_name]["composite_component"].append(
-                    {"name": str(node_key), "description": node_description}
+                    {"name": node_name, "description": node_description}
                 )
 
         archs.append(list(composite_components_data.values()))
 
+    checkVariabilityDiagram(archs)
     # Retornar la lista de arquitecturas
     return archs
 
@@ -60,7 +68,7 @@ def checkVariabilityDiagram(archs):
     for arch_index, components in enumerate(archs):
         print(f"Arquitectura {arch_index}:")
         for component in components:
-            print(f"Componente: {component['name']}")
-            print(f"Descripción: {component['description']}")
+            print(f"ID del Componente: {component['name']}")
+            print(f"Nombre de Aspecto: {component['description']}")
             print(f"Nodos: {component['composite_component']}")
             print("--------------------")
