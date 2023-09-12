@@ -12,10 +12,9 @@ def handleVariabilityData(data):
 
     archs = []
 
-    composite_components_data = {}
-    composite_components_description = {}
-
     for arch_index in range(num_architectures):
+        composite_components_data = {}
+
         versions_ref = architectures_ref.child(str(arch_index)).child("versions")
         versions_data = versions_ref.get()
         latest_version_index = len(versions_data) - 1
@@ -30,7 +29,7 @@ def handleVariabilityData(data):
             "elements/nodes"
         )
         nodes = nodes_ref.get()
-        n = 0
+
         for component_data in composite_components:
             component_name = component_data["name"]
             component_desc = component_data["description"]
@@ -47,9 +46,8 @@ def handleVariabilityData(data):
 
         for node_key, node_data in enumerate(nodes):
             node_name = node_data["data"]["id"]
-            node_description = node_data["data"]["description"]
-            composite_name = node_data["data"].get("composite")
-            composite_components_description[node_key] = node_description
+            node_description = str(node_data["data"]["description"])
+            composite_name = str(node_data["data"].get("composite"))
 
             if composite_name in composite_components_data:
                 composite_components_data[composite_name]["composite_component"].append(
@@ -66,7 +64,7 @@ def handleVariabilityData(data):
 # Imprimir el resultado para verificar
 def checkVariabilityDiagram(archs):
     for arch_index, components in enumerate(archs):
-        print(f"Arquitectura {arch_index}:")
+        print(f"ARQUITECTURA {arch_index}:")
         for component in components:
             print(f"ID del Componente: {component['name']}")
             print(f"Nombre de Aspecto: {component['description']}")
