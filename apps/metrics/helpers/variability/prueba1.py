@@ -21,8 +21,8 @@ def line_breaks(string):
 
     words = string.split()
     new_string = ""
-    for i in range(0, len(words), 6):
-        new_string += " ".join(words[i : i + 6]) + "\n"
+    for i in range(0, len(words), 3):
+        new_string += " ".join(words[i : i + 3]) + "\n"
 
     return new_string
 
@@ -47,8 +47,8 @@ def creategraph(graph, cclist, sclist):
         graph.node(
             cc["description"],
             cc["description"],
-            shape="box",
-            style="rounded,filled",
+            shape="oval",
+            style="filled",
             fillcolor="lightblue",
         )
         edge = {"from": "head", "to": cc["description"]}
@@ -68,7 +68,7 @@ def creategraph(graph, cclist, sclist):
 
     # Descripciones sc conectadas con su padre
     for sc in sclist:
-        if len(sc["description"].split()) > 6:
+        if len(sc["description"].split()) > 3:
             des = line_breaks(sc["description"])
         else:
             des = sc["description"]
@@ -99,7 +99,7 @@ def creategraph(graph, cclist, sclist):
             sc["name"],
             sc["name"],
             shape="box",
-            style="rounded,filled",
+            style="filled",
             fillcolor="lightpink",
         )
 
@@ -120,6 +120,7 @@ def creategraph(graph, cclist, sclist):
 
 
 def initVariabilityDiagram(data):
+    #TODO PONER NOMBRE DEL PROYECTO
     name = "Prueba"
     # Contador de número de gráficos generados para crear el nombre del pdf
     cont = 0
@@ -131,6 +132,8 @@ def initVariabilityDiagram(data):
     filename = f"C:\\TESISBEHRENSBRICENO\\diagrama_de_variabilidad_{name}v{cont}"
     # Crea el grafo
     graph = graphviz.Graph("Grafo", filename=filename)
+    #Tambien sirve 'spline
+    graph.graph_attr['splines'] = 'polyline'
 
     archs = handleVariabilityData(data)
     scnodes = handlescdesc(archs)
@@ -140,7 +143,7 @@ def initVariabilityDiagram(data):
 
     # Nombre de arquitectura de referencia (Pedir al usuario seguramente)
 
-    graph.node("head", name, shape="box", fontsize="18", bold="True", style="rounded")
+    graph.node("head", name.upper(),shape="underline", fontsize='24', fontname="times-bold")
     creategraph(graph, ccnodes, scnodes)
 
     # Crea subgrafo para la leyenda
@@ -197,30 +200,9 @@ def initVariabilityDiagram(data):
     s.node("or", "Or", shape="plain", fontsize="10", bold="True")
     s.node("xor", "Alternativa", shape="plain", fontsize="10")
 
-    s.node(
-        "fun",
-        "Funcionalidad",
-        shape="box",
-        fontsize="10",
-        style="rounded,filled",
-        fillcolor="khaki1",
-    )
-    s.node(
-        "asp",
-        "Aspecto",
-        shape="box",
-        fontsize="10",
-        style="rounded,filled",
-        fillcolor="lightblue",
-    )
-    s.node(
-        "class",
-        "Clase",
-        shape="box",
-        fontsize="10",
-        style="rounded,filled",
-        fillcolor="lightpink",
-    )
+    s.node('fun' , "Funcionalidad", shape="box", fontsize='10', style='rounded,filled', fillcolor='khaki1')
+    s.node('asp' , "Aspecto", shape="oval", fontsize='10', style='filled', fillcolor='lightblue' )
+    s.node('class' , "Clase", shape="box", fontsize='10', style='filled', fillcolor='lightpink' )
 
     # s.node('ley', 'Leyenda', shape='plain', fontsize='24')
 
