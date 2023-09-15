@@ -1,5 +1,6 @@
 import graphviz
 import os
+from firebase_admin import db
 from apps.metrics.helpers.variability.data import handleVariabilityData
 from apps.metrics.helpers.variability.vardatahandler import handleccdesc
 from apps.metrics.helpers.variability.vardatahandler import handlescdesc
@@ -120,8 +121,13 @@ def creategraph(graph, cclist, sclist):
 
 
 def initVariabilityDiagram(data):
-    #TODO PONER NOMBRE DEL PROYECTO
-    name = "Prueba"
+    uid = data["user_id"]
+    project_index = data["project_index"]
+    url = "/users/" + uid + "/projects/" + str(project_index)
+
+    architectures_ref = db.reference(url + "/name")
+    name = architectures_ref.get()
+
     # Contador de número de gráficos generados para crear el nombre del pdf
     cont = 0
     while os.path.exists(
@@ -132,8 +138,8 @@ def initVariabilityDiagram(data):
     filename = f"C:\\TESISBEHRENSBRICENO\\diagrama_de_variabilidad_{name}v{cont}"
     # Crea el grafo
     graph = graphviz.Graph("Grafo", filename=filename)
-    #Tambien sirve 'spline
-    graph.graph_attr['splines'] = 'polyline'
+    # Tambien sirve 'spline
+    graph.graph_attr["splines"] = "polyline"
 
     archs = handleVariabilityData(data)
     scnodes = handlescdesc(archs)
@@ -143,7 +149,9 @@ def initVariabilityDiagram(data):
 
     # Nombre de arquitectura de referencia (Pedir al usuario seguramente)
 
-    graph.node("head", name.upper(),shape="underline", fontsize='24', fontname="times-bold")
+    graph.node(
+        "head", name.upper(), shape="underline", fontsize="24", fontname="times-bold"
+    )
     creategraph(graph, ccnodes, scnodes)
 
     # Crea subgrafo para la leyenda
@@ -200,9 +208,30 @@ def initVariabilityDiagram(data):
     s.node("or", "Or", shape="plain", fontsize="10", bold="True")
     s.node("xor", "Alternativa", shape="plain", fontsize="10")
 
-    s.node('fun' , "Funcionalidad", shape="box", fontsize='10', style='rounded,filled', fillcolor='khaki1')
-    s.node('asp' , "Aspecto", shape="oval", fontsize='10', style='filled', fillcolor='lightblue' )
-    s.node('class' , "Clase", shape="box", fontsize='10', style='filled', fillcolor='lightpink' )
+    s.node(
+        "fun",
+        "Funcionalidad",
+        shape="box",
+        fontsize="10",
+        style="rounded,filled",
+        fillcolor="khaki1",
+    )
+    s.node(
+        "asp",
+        "Aspecto",
+        shape="oval",
+        fontsize="10",
+        style="filled",
+        fillcolor="lightblue",
+    )
+    s.node(
+        "class",
+        "Clase",
+        shape="box",
+        fontsize="10",
+        style="filled",
+        fillcolor="lightpink",
+    )
 
     # s.node('ley', 'Leyenda', shape='plain', fontsize='24')
 
