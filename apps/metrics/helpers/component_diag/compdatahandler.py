@@ -18,7 +18,7 @@ def count_aspects(archs_compdata):
                 component_dict[component_name]["count"] += 1
 
     compdata = list(component_dict.values())
-    print('VIVEEEE')
+    print(compdata)
     return compdata
 
 

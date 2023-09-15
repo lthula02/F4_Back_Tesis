@@ -26,7 +26,9 @@ def handleComponentData(data):
 
         compdata_dict = {}  # Diccionario para almacenar la información temporalmente
         for edge in edges:
-            print(edge["data"]["source_component"])
+            print('--------------------------------------')
+            print(f'{edge["data"]["source_component"]} to {edge["data"]["target_component"]}')
+            print('--------------------------------------')
             source_component = edge["data"]["source_component"]
             target_component = edge["data"]["target_component"]
             if source_component != "n/a" and target_component != "n/a":

@@ -23,8 +23,8 @@ def line_breaks(string):
 
     words = string.split()
     new_string = ""
-    for i in range(0, len(words), 3):
-        new_string += " ".join(words[i : i + 3]) + "\n"
+    for i in range(0, len(words), 4):
+        new_string += " ".join(words[i : i + 4]) + "\n"
 
     return new_string
 
@@ -70,7 +70,7 @@ def creategraph(graph, cclist, sclist):
 
     # Descripciones sc conectadas con su padre
     for sc in sclist:
-        if len(sc["description"].split()) > 3:
+        if len(sc["description"].split()) > 4:
             des = line_breaks(sc["description"])
         else:
             des = sc["description"]

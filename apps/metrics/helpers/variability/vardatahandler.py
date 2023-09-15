@@ -3,14 +3,13 @@ def handlemlist(mlist):
     newlist =[]
     desclist=[]
 
-    print(len(mlist))
+
     for i in mlist:
         newlist.append([])
         desclist.append([])
 
 
     for i in range(len(mlist)):
-        print(i)
         for comp in mlist[i]:
             if comp['description'] in desclist[i]:
                 for newcomp in newlist[i]:
@@ -22,8 +21,7 @@ def handlemlist(mlist):
                 desclist.append(comp['description'])
                 newlist[i].append(comp)
 
-    print('---------------------------------------------------------------------')
-    print(newlist)
+
     return newlist
                             
 
