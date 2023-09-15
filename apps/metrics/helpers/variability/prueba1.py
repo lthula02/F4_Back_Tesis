@@ -1,5 +1,6 @@
 import graphviz
 import os
+from firebase_admin import db
 from apps.metrics.helpers.variability.data import handleVariabilityData
 from apps.metrics.helpers.variability.vardatahandler import handleccdesc
 from apps.metrics.helpers.variability.vardatahandler import handlescdesc
@@ -121,8 +122,13 @@ def creategraph(graph, cclist, sclist):
 
 
 def initVariabilityDiagram(data):
-    #TODO PONER NOMBRE DEL PROYECTO
-    name = "Prueba"
+    uid = data["user_id"]
+    project_index = data["project_index"]
+    url = "/users/" + uid + "/projects/" + str(project_index)
+
+    architectures_ref = db.reference(url + "/name")
+    name = architectures_ref.get()
+
     # Contador de número de gráficos generados para crear el nombre del pdf
     cont = 0
     while os.path.exists(
@@ -133,11 +139,10 @@ def initVariabilityDiagram(data):
     filename = f"C:\\TESISBEHRENSBRICENO\\diagrama_de_variabilidad_{name}v{cont}"
     # Crea el grafo
     graph = graphviz.Graph("Grafo", filename=filename)
-    #Tambien sirve 'spline
-    graph.graph_attr['splines'] = 'polyline'
-    graph.graph_attr['rankdir'] = 'LR'
+    # Tambien sirve 'spline
+    graph.graph_attr["splines"] = "polyline"
+    graph.graph_attr["rankdir"] = "LR"
 
-    
     archs = handleVariabilityData(data)
     archs = handlemlist(archs)
     scnodes = handlescdesc(archs)
@@ -147,7 +152,9 @@ def initVariabilityDiagram(data):
 
     # Nombre de arquitectura de referencia (Pedir al usuario seguramente)
 
-    graph.node("head", name.upper(),shape="underline", fontsize='24', fontname="times-bold")
+    graph.node(
+        "head", name.upper(), shape="underline", fontsize="24", fontname="times-bold"
+    )
     creategraph(graph, ccnodes, scnodes)
 
     # Crea subgrafo para la leyenda
@@ -172,27 +179,45 @@ def initVariabilityDiagram(data):
 
     s.node("pnonmand", " ", shape="plain", fontsize="8")
     s.node("pmand", " ", shape="plain", fontsize="8")
-    
+
     s.node("por", " ", shape="plain", fontsize="8", bold="True")
 
-    s.node("ley", "LEYENDA", shape="underline", fontsize='24', fontname="times-bold")
+    s.node("ley", "LEYENDA", shape="underline", fontsize="24", fontname="times-bold")
     # s.node("pfun", " ", shape="plain", fontsize="8", bold="True")
     # s.node("pasp", " ", shape="plain", fontsize="8", bold="True")
     # s.node("pclass", " ", shape="plain", fontsize="8")
 
     s.node("mand", "  Obligatorio", shape="plain", fontsize="16")
     s.node("nonmand", "  Opcional", shape="plain", fontsize="16")
-    
+
     s.node("or", "  Or", shape="plain", fontsize="16", bold="True")
 
+    s.node(
+        "fun",
+        "Funcionalidad",
+        shape="box",
+        fontsize="16",
+        style="rounded,filled",
+        fillcolor="khaki1",
+    )
+    s.node(
+        "asp",
+        "Aspecto",
+        shape="oval",
+        fontsize="16",
+        style="filled",
+        fillcolor="lightblue",
+    )
+    s.node(
+        "class",
+        "Clase",
+        shape="box",
+        fontsize="16",
+        style="filled",
+        fillcolor="lightpink",
+    )
 
-    s.node('fun' , "Funcionalidad", shape="box", fontsize='16', style='rounded,filled', fillcolor='khaki1')
-    s.node('asp' , "Aspecto", shape="oval", fontsize='16', style='filled', fillcolor='lightblue' )
-    s.node('class' , "Clase", shape="box", fontsize='16', style='filled', fillcolor='lightpink' )
-    
-
-
-    #EDGES
+    # EDGES
 
     s.edge("por4", "por3", dir="forward", arrowhead="none", style="dotted")
     s.edge("por3", "por2", dir="forward", arrowhead="none", style="dotted")
@@ -205,20 +230,13 @@ def initVariabilityDiagram(data):
     s.edge("mand", "pfun1", dir="forward", arrowhead="none", style="invis")
     s.edge("pfun3", "mand", dir="forward", arrowhead="dot", style="solid")
 
-
     s.edge("pfun1", "fun", dir="forward", arrowhead="none", style="invis")
 
-
-
     s.edge("pasp1", "asp", dir="forward", arrowhead="none", style="invis")
-
 
     s.edge("or", "pclass1", dir="forward", arrowhead="none", style="invis")
     s.edge("pclass1", "class", dir="forward", arrowhead="none", style="invis")
 
-    
-
-    
     s.edge("pclass3", "or", dir="forward", style="dashed", arrowhead="none")
     s.edge("pclass3", "or", dir="forward", style="dashed", arrowhead="none")
     s.edge("pand", "and", dir="forward", style="solid", arrowhead="none")
@@ -226,7 +244,6 @@ def initVariabilityDiagram(data):
     # s.edge("pclass", "class", dir="forward", arrowhead="none", style="invis")
     # s.edge("pasp", "asp", dir="forward", arrowhead="none", style="invis")
     # s.edge("pfun", "fun", dir="forward", arrowhead="none", style="invis")
-    
 
     j = graph.subgraph(graph=s)
 
