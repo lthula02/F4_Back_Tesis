@@ -25,7 +25,6 @@ def handleComponentData(data):
         edges = edges_ref.get()
 
         compdata_dict = {}  # Diccionario para almacenar la información temporalmente
-
         for edge in edges:
             print(edge["data"]["source_component"])
             source_component = edge["data"]["source_component"]
