@@ -1,5 +1,6 @@
 import graphviz
 import os
+from firebase_admin import db
 from apps.metrics.helpers.component_diag.compdata import (
     handleComponentData,
 )  # De aquí se extraen los datos
@@ -15,7 +16,13 @@ Ej.
 
 
 def initComponentDiagram(data):
-    name = "Prueba"
+    uid = data["user_id"]
+    project_index = data["project_index"]
+    url = "/users/" + uid + "/projects/" + str(project_index)
+
+    architectures_ref = db.reference(url + "/name")
+    name = architectures_ref.get()
+
     cont = 0
 
     while os.path.exists(
