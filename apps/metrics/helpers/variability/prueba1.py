@@ -4,6 +4,7 @@ from firebase_admin import db
 from apps.metrics.helpers.variability.data import handleVariabilityData
 from apps.metrics.helpers.variability.vardatahandler import handleccdesc
 from apps.metrics.helpers.variability.vardatahandler import handlescdesc
+from apps.metrics.helpers.variability.vardatahandler import handlemlist
 
 
 import time
@@ -22,8 +23,8 @@ def line_breaks(string):
 
     words = string.split()
     new_string = ""
-    for i in range(0, len(words), 3):
-        new_string += " ".join(words[i : i + 3]) + "\n"
+    for i in range(0, len(words), 4):
+        new_string += " ".join(words[i : i + 4]) + "\n"
 
     return new_string
 
@@ -35,7 +36,7 @@ def styleedge(comp):
     elif comp == "or":
         return "dashed"
     elif comp == "xor":
-        return "dotted"
+        return "dashed"
 
 
 def creategraph(graph, cclist, sclist):
@@ -69,7 +70,7 @@ def creategraph(graph, cclist, sclist):
 
     # Descripciones sc conectadas con su padre
     for sc in sclist:
-        if len(sc["description"].split()) > 3:
+        if len(sc["description"].split()) > 4:
             des = line_breaks(sc["description"])
         else:
             des = sc["description"]
@@ -80,7 +81,7 @@ def creategraph(graph, cclist, sclist):
             style="rounded,filled",
             fillcolor="khaki1",
         )
-        # Edges nivel 2 al 3
+        # Edges nivel 2 al 3 -> Aspecto a descripcion
         edge = {"from": sc["parent"], "to": sc["description"]}
         if edge in edgelist:
             pass
@@ -140,8 +141,10 @@ def initVariabilityDiagram(data):
     graph = graphviz.Graph("Grafo", filename=filename)
     # Tambien sirve 'spline
     graph.graph_attr["splines"] = "polyline"
+    graph.graph_attr["rankdir"] = "LR"
 
     archs = handleVariabilityData(data)
+    archs = handlemlist(archs)
     scnodes = handlescdesc(archs)
     ccnodes = handleccdesc(archs)
 
@@ -157,62 +160,43 @@ def initVariabilityDiagram(data):
     # Crea subgrafo para la leyenda
     s = graphviz.Graph("Leyenda")
 
-    s.node("pnonmand4", " ", shape="plain", fontsize="8")
-    s.node("pmand4", " ", shape="plain", fontsize="8")
-    s.node("pand4", " ", shape="plain", fontsize="8", bold="True")
     s.node("por4", " ", shape="plain", fontsize="8", bold="True")
-    s.node("pxor4", " ", shape="plain", fontsize="8")
     s.node("pfun4", " ", shape="plain", fontsize="8", bold="True")
     s.node("pasp4", " ", shape="plain", fontsize="8", bold="True")
     s.node("pclass4", " ", shape="plain", fontsize="8")
-
-    s.node("pnonmand3", " ", shape="plain", fontsize="8")
-    s.node("pmand3", " ", shape="plain", fontsize="8")
-    s.node("pand3", " ", shape="plain", fontsize="8", bold="True")
     s.node("por3", " ", shape="plain", fontsize="8", bold="True")
-    s.node("pxor3", " ", shape="plain", fontsize="8")
     s.node("pfun3", " ", shape="plain", fontsize="8", bold="True")
     s.node("pasp3", " ", shape="plain", fontsize="8", bold="True")
     s.node("pclass3", " ", shape="plain", fontsize="8")
-
-    s.node("pnonmand2", " ", shape="plain", fontsize="8")
-    s.node("pmand2", " ", shape="plain", fontsize="8")
-    s.node("pand2", " ", shape="plain", fontsize="8", bold="True")
     s.node("por2", " ", shape="plain", fontsize="8", bold="True")
-    s.node("pxor2", " ", shape="plain", fontsize="8")
-    s.node("pfun2", " ", shape="plain", fontsize="8", bold="True")
-    s.node("pasp2", " ", shape="plain", fontsize="8", bold="True")
-    s.node("pclass2", " ", shape="plain", fontsize="8")
-
-    s.node("pnonmand1", " ", shape="plain", fontsize="8")
-    s.node("pmand1", " ", shape="plain", fontsize="8")
-    s.node("pand1", " ", shape="plain", fontsize="8", bold="True")
     s.node("por1", " ", shape="plain", fontsize="8", bold="True")
-    s.node("pxor1", " ", shape="plain", fontsize="8")
     s.node("pfun1", " ", shape="plain", fontsize="8", bold="True")
     s.node("pasp1", " ", shape="plain", fontsize="8", bold="True")
     s.node("pclass1", " ", shape="plain", fontsize="8")
 
+    s.node("and", "  And", shape="plain", fontsize="16", bold="True")
+    s.node("pand", " ", shape="plain", fontsize="8", bold="True")
+
     s.node("pnonmand", " ", shape="plain", fontsize="8")
     s.node("pmand", " ", shape="plain", fontsize="8")
-    s.node("pand", " ", shape="plain", fontsize="8", bold="True")
-    s.node("por", " ", shape="plain", fontsize="8", bold="True")
-    s.node("pxor", " ", shape="plain", fontsize="8")
-    s.node("pfun", " ", shape="plain", fontsize="8", bold="True")
-    s.node("pasp", " ", shape="plain", fontsize="8", bold="True")
-    s.node("pclass", " ", shape="plain", fontsize="8")
 
-    s.node("mand", "Obligatorio", shape="plain", fontsize="10")
-    s.node("nonmand", "Opcional", shape="plain", fontsize="10")
-    s.node("and", "And", shape="plain", fontsize="10", bold="True")
-    s.node("or", "Or", shape="plain", fontsize="10", bold="True")
-    s.node("xor", "Alternativa", shape="plain", fontsize="10")
+    s.node("por", " ", shape="plain", fontsize="8", bold="True")
+
+    s.node("ley", "LEYENDA", shape="underline", fontsize="24", fontname="times-bold")
+    # s.node("pfun", " ", shape="plain", fontsize="8", bold="True")
+    # s.node("pasp", " ", shape="plain", fontsize="8", bold="True")
+    # s.node("pclass", " ", shape="plain", fontsize="8")
+
+    s.node("mand", "  Obligatorio", shape="plain", fontsize="16")
+    s.node("nonmand", "  Opcional", shape="plain", fontsize="16")
+
+    s.node("or", "  Or", shape="plain", fontsize="16", bold="True")
 
     s.node(
         "fun",
         "Funcionalidad",
         shape="box",
-        fontsize="10",
+        fontsize="16",
         style="rounded,filled",
         fillcolor="khaki1",
     )
@@ -220,7 +204,7 @@ def initVariabilityDiagram(data):
         "asp",
         "Aspecto",
         shape="oval",
-        fontsize="10",
+        fontsize="16",
         style="filled",
         fillcolor="lightblue",
     )
@@ -228,70 +212,38 @@ def initVariabilityDiagram(data):
         "class",
         "Clase",
         shape="box",
-        fontsize="10",
+        fontsize="16",
         style="filled",
         fillcolor="lightpink",
     )
 
-    # s.node('ley', 'Leyenda', shape='plain', fontsize='24')
+    # EDGES
 
-    # s.edge('asp', 'fun', dir='forward', arrowhead='none', style='invis' )
-    # s.edge('fun', 'class', dir='forward', arrowhead='none', style='invis' )
+    s.edge("por4", "por3", dir="forward", arrowhead="none", style="dotted")
+    s.edge("por3", "por2", dir="forward", arrowhead="none", style="dotted")
+    s.edge("por2", "por1", dir="forward", arrowhead="none", style="dotted")
+    s.edge("por1", "por", dir="forward", arrowhead="none", style="dotted")
 
-    # s.edge('ley', 'asp', arrowhead='none', style='invis')
-    # s.edge('ley', 'fun', arrowhead='none', style='invis')
-    # s.edge('ley', 'class', arrowhead='none', style='invis')
-    s.edge("pnonmand4", "pnonmand3", dir="forward", arrowhead="none", style="invis")
-    s.edge("pnonmand3", "pnonmand2", dir="forward", arrowhead="none", style="invis")
-    s.edge("pnonmand2", "pnonmand1", dir="forward", arrowhead="none", style="invis")
-    s.edge("pnonmand1", "pnonmand", dir="forward", arrowhead="none", style="invis")
+    s.edge("nonmand", "pasp1", dir="forward", arrowhead="none", style="invis")
+    s.edge("pasp3", "nonmand", dir="forward", arrowhead="odot", style="solid")
 
-    s.edge("pmand4", "pmand3", dir="forward", arrowhead="none", style="invis")
-    s.edge("pmand3", "pmand2", dir="forward", arrowhead="none", style="invis")
-    s.edge("pmand2", "pmand1", dir="forward", arrowhead="none", style="invis")
-    s.edge("pmand1", "pmand", dir="forward", arrowhead="none", style="invis")
+    s.edge("mand", "pfun1", dir="forward", arrowhead="none", style="invis")
+    s.edge("pfun3", "mand", dir="forward", arrowhead="dot", style="solid")
 
-    s.edge("pand4", "pand3", dir="forward", arrowhead="none", style="invis")
-    s.edge("pand3", "pand2", dir="forward", arrowhead="none", style="invis")
-    s.edge("pand2", "pand1", dir="forward", arrowhead="none", style="invis")
-    s.edge("pand1", "pand", dir="forward", arrowhead="none", style="invis")
+    s.edge("pfun1", "fun", dir="forward", arrowhead="none", style="invis")
 
-    s.edge("por4", "por3", dir="forward", arrowhead="none", style="invis")
-    s.edge("por3", "por2", dir="forward", arrowhead="none", style="invis")
-    s.edge("por2", "por1", dir="forward", arrowhead="none", style="invis")
-    s.edge("por1", "por", dir="forward", arrowhead="none", style="invis")
+    s.edge("pasp1", "asp", dir="forward", arrowhead="none", style="invis")
 
-    s.edge("pxor4", "pxor3", dir="forward", arrowhead="none", style="invis")
-    s.edge("pxor3", "pxor2", dir="forward", arrowhead="none", style="invis")
-    s.edge("pxor2", "pxor1", dir="forward", arrowhead="none", style="invis")
-    s.edge("pxor1", "pxor", dir="forward", arrowhead="none", style="invis")
+    s.edge("or", "pclass1", dir="forward", arrowhead="none", style="invis")
+    s.edge("pclass1", "class", dir="forward", arrowhead="none", style="invis")
 
-    # s.edge('pfun4', 'pfun3', dir='forward', arrowhead='none', style='invis' )
-    s.edge("pfun3", "pfun2", dir="forward", arrowhead="none", style="invis")
-    s.edge("pfun2", "pfun1", dir="forward", arrowhead="none", style="invis")
-    s.edge("pfun1", "pfun", dir="forward", arrowhead="none", style="invis")
-
-    # s.edge('pasp4', 'pasp3', dir='forward', arrowhead='none', style='invis' )
-    s.edge("pasp3", "pasp2", dir="forward", arrowhead="none", style="invis")
-    s.edge("pasp2", "pasp1", dir="forward", arrowhead="none", style="invis")
-    s.edge("pasp1", "pasp", dir="forward", arrowhead="none", style="invis")
-
-    # s.edge('pclass4', 'pclass3', dir='forward', arrowhead='none', style='invis' )
-    s.edge("pclass3", "pclass2", dir="forward", arrowhead="none", style="invis")
-    s.edge("pclass2", "pclass1", dir="forward", arrowhead="none", style="invis")
-    s.edge("pclass1", "pclass", dir="forward", arrowhead="none", style="invis")
-
-    s.edge("pmand", "mand", dir="forward", arrowhead="dot", style="solid")
-    s.edge("pnonmand", "nonmand", dir="forward", arrowhead="odot", style="solid")
+    s.edge("pclass3", "or", dir="forward", style="dashed", arrowhead="none")
+    s.edge("pclass3", "or", dir="forward", style="dashed", arrowhead="none")
     s.edge("pand", "and", dir="forward", style="solid", arrowhead="none")
-    s.edge("por", "or", dir="forward", style="dashed", arrowhead="none")
-    s.edge("pxor", "xor", dir="forward", style="dotted", arrowhead="none")
     s.edge("pand", "and", dir="forward", style="solid", arrowhead="none")
-    s.edge("por", "or", dir="forward", style="dashed", arrowhead="none")
-    s.edge("pxor", "xor", dir="forward", style="dotted", arrowhead="none")
-    s.edge("pclass", "class", dir="forward", arrowhead="none", style="invis")
-    s.edge("pasp", "asp", dir="forward", arrowhead="none", style="invis")
-    s.edge("pfun", "fun", dir="forward", arrowhead="none", style="invis")
+    # s.edge("pclass", "class", dir="forward", arrowhead="none", style="invis")
+    # s.edge("pasp", "asp", dir="forward", arrowhead="none", style="invis")
+    # s.edge("pfun", "fun", dir="forward", arrowhead="none", style="invis")
 
     j = graph.subgraph(graph=s)
 
