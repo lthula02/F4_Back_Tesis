@@ -5,9 +5,7 @@ from apps.metrics.helpers.variability.data import handleVariabilityData
 from apps.metrics.helpers.variability.vardatahandler import handleccdesc
 from apps.metrics.helpers.variability.vardatahandler import handlescdesc
 from apps.metrics.helpers.variability.vardatahandler import handlemlist
-
-
-import time
+from apps.metrics.helpers.variability.vardatahandler import handlescarq
 
 
 def arrowhead(comp):
@@ -19,7 +17,7 @@ def arrowhead(comp):
 
 
 def line_breaks(string):
-    """Agrega saltos de línea cada 6 palabras en un string largo"""
+    """Agrega saltos de línea cada 4 palabras en un string largo"""
 
     words = string.split()
     new_string = ""
@@ -30,20 +28,26 @@ def line_breaks(string):
 
 
 def styleedge(comp):
-    """Define el tipo de línea según el valor lógico dado"""
+    """
+    Define el tipo de línea según el valor lógico dado
+    """
+
     if comp == "and":
         return "solid"
     elif comp == "or":
         return "dashed"
     elif comp == "xor":
-        return "dashed"
+        return "dotted"
 
 
-def creategraph(graph, cclist, sclist):
-    """Crea nodos a partir de las listas de componentes simples y compuestos creadas anteriormente"""
+def creategraph(graph, cclist, sclist, mlist):
+    """
+    Crea nodos a partir de las listas de componentes simples y compuestos creadas anteriormente
+    """
+
     # Lista para asegurar que no tenemos edges repetidos
     edgelist = []
-    # Descripciones cc
+    # Descripciones de aspectos
 
     for cc in cclist:
         graph.node(
@@ -68,12 +72,13 @@ def creategraph(graph, cclist, sclist):
                 style=styleedge(cc["logical"]),
             )
 
-    # Descripciones sc conectadas con su padre
+    # Descripciones nodos conectadas con su padre
     for sc in sclist:
         if len(sc["description"].split()) > 4:
             des = line_breaks(sc["description"])
         else:
             des = sc["description"]
+
         graph.node(
             sc["description"],
             des,
@@ -95,11 +100,11 @@ def creategraph(graph, cclist, sclist):
                 style=styleedge(sc["logical"]),
             )
 
-    # SC conectados con su descripción
+    # Nodos conectados con su descripción
     for sc in sclist:
         graph.node(
             sc["name"],
-            sc["name"],
+            f'{sc["name"] + handlescarq(mlist, sc["name"], sc["mandatory_name"])}',
             shape="box",
             style="filled",
             fillcolor="lightpink",
@@ -118,10 +123,13 @@ def creategraph(graph, cclist, sclist):
                 arrowhead=arrowhead(sc["mandatory_name"]),
                 style=styleedge(sc["son_logical"]),
             )
-            # taillabel=sc['logical']
+
 
 
 def initVariabilityDiagram(data):
+    '''
+    Función principal para crear el diagrama
+    '''
     uid = data["user_id"]
     project_index = data["project_index"]
     url = "/users/" + uid + "/projects/" + str(project_index)
@@ -137,29 +145,28 @@ def initVariabilityDiagram(data):
         cont += 1
 
     filename = f"C:\\TESISBEHRENSBRICENO\\diagrama_de_variabilidad_{name}v{cont}"
+
     # Crea el grafo
     graph = graphviz.Graph("Grafo", filename=filename)
-    # Tambien sirve 'spline
     graph.graph_attr["splines"] = "polyline"
     graph.graph_attr["rankdir"] = "LR"
 
+    #Funciones para el manejo de la data
     archs = handleVariabilityData(data)
     archs = handlemlist(archs)
     scnodes = handlescdesc(archs)
     ccnodes = handleccdesc(archs)
 
-    # crear nodo cabeza
+    #Nodo del título
+    graph.node("head", name.upper(), shape="underline", fontsize="24", fontname="times-bold")
+    creategraph(graph, ccnodes, scnodes, archs)
 
-    # Nombre de arquitectura de referencia (Pedir al usuario seguramente)
+    #Se crea la leyenda, a partir de un subgrafo
 
-    graph.node(
-        "head", name.upper(), shape="underline", fontsize="24", fontname="times-bold"
-    )
-    creategraph(graph, ccnodes, scnodes)
-
-    # Crea subgrafo para la leyenda
+    # Crea subgrafo 
     s = graphviz.Graph("Leyenda")
 
+    #Nodos auxiliares transparentes
     s.node("por4", " ", shape="plain", fontsize="8", bold="True")
     s.node("pfun4", " ", shape="plain", fontsize="8", bold="True")
     s.node("pasp4", " ", shape="plain", fontsize="8", bold="True")
@@ -173,25 +180,20 @@ def initVariabilityDiagram(data):
     s.node("pfun1", " ", shape="plain", fontsize="8", bold="True")
     s.node("pasp1", " ", shape="plain", fontsize="8", bold="True")
     s.node("pclass1", " ", shape="plain", fontsize="8")
-
-    s.node("and", "  And", shape="plain", fontsize="16", bold="True")
     s.node("pand", " ", shape="plain", fontsize="8", bold="True")
-
+    s.node("pxor", " ", shape="plain", fontsize="8", bold="True")
     s.node("pnonmand", " ", shape="plain", fontsize="8")
     s.node("pmand", " ", shape="plain", fontsize="8")
-
     s.node("por", " ", shape="plain", fontsize="8", bold="True")
 
-    s.node("ley", "LEYENDA", shape="underline", fontsize="24", fontname="times-bold")
-    # s.node("pfun", " ", shape="plain", fontsize="8", bold="True")
-    # s.node("pasp", " ", shape="plain", fontsize="8", bold="True")
-    # s.node("pclass", " ", shape="plain", fontsize="8")
 
+    #Nodos con contenido
+    s.node("xor", "  Alternativa", shape="plain", fontsize="16", bold="True")
+    s.node("and", "  And", shape="plain", fontsize="16", bold="True")
+    s.node("ley", "LEYENDA", shape="underline", fontsize="24", fontname="times-bold")
     s.node("mand", "  Obligatorio", shape="plain", fontsize="16")
     s.node("nonmand", "  Opcional", shape="plain", fontsize="16")
-
     s.node("or", "  Or", shape="plain", fontsize="16", bold="True")
-
     s.node(
         "fun",
         "Funcionalidad",
@@ -241,14 +243,10 @@ def initVariabilityDiagram(data):
     s.edge("pclass3", "or", dir="forward", style="dashed", arrowhead="none")
     s.edge("pand", "and", dir="forward", style="solid", arrowhead="none")
     s.edge("pand", "and", dir="forward", style="solid", arrowhead="none")
-    # s.edge("pclass", "class", dir="forward", arrowhead="none", style="invis")
-    # s.edge("pasp", "asp", dir="forward", arrowhead="none", style="invis")
-    # s.edge("pfun", "fun", dir="forward", arrowhead="none", style="invis")
+    s.edge("pxor", "xor", dir="forward", style="dotted", arrowhead="none")
+    s.edge("pxor", "xor", dir="forward", style="dotted", arrowhead="none")
+
 
     j = graph.subgraph(graph=s)
 
     graph.view()
-
-    # time.sleep(3)
-    # os.remove(f'{filename}')
-    # os.remove(f'{filename}.pdf')
