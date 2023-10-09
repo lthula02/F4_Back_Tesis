@@ -104,32 +104,48 @@ def handleEditName(data):
 
 # Permite editar el componente compuesto al que pertenece un nodo
 def handleEditNodeCompositeComponent(data):
-    dataNeeded = extractData(data, True, True, False, False)
+    dataNeeded = extractData(data, True, True, True, False)
+
     list_t = dataNeeded["list_t"]
     nodes = dataNeeded["nodes"]
 
-    nodeData = data["node"]
-    composite_component = data["new_name"]
-
-    # Crear un diccionario para búsqueda eficiente de nodos
-    node_dict = {node["data"]["id"]: node for node in nodes}
+    nodeName = data["node"]
+    new_component = data["new_name"]
 
     try:
-        fullNode = SearchNode(nodeData, nodes)  # me quede sin nombres jeje
+        fullNode = SearchNode(nodeName, nodes)  # me quede sin nombres jeje
+        nodeName = fullNode["data"]["id"]
 
         # Si el nodo pertenece con anterioridad a otro componente compuesto, actualizar lista_t
         if "composite" in fullNode["data"]:
-            old_composite = fullNode["data"]["composite"]
-            for lt in list_t:
-                if old_composite in lt["composite_component"]:
-                    lt["composite_component"].remove(old_composite)
-                    break
+            if fullNode["data"]["composite"] != "-":
+                old_component = fullNode["data"]["composite"]
+                i = 0
+                for lt in list_t:
+                    if (
+                        old_component in lt["description"]
+                        or old_component in lt["name"]
+                    ):
+                        if nodeName in lt["composite_component"]:
+                            lt["composite_component"].remove(nodeName)
+                            i += 1
+                    if (
+                        new_component in lt["description"]
+                        or new_component in lt["name"]
+                    ):
+                        lt["composite_component"].append(nodeName)
+                        i += 1
+                    if i == 2:
+                        break
 
         # Agregar el nodo al nuevo componente compuesto
-        if composite_component in node_dict:
-            t = node_dict[composite_component]
-            t["composite_component"].append(nodeData)
-            node_dict[nodeData]["data"].update({"composite": t["name"], "bg": t["bg"]})
+        fullNode["data"]["composite"] = new_component
+        node_dict = {}
+        for node in nodes:
+            if node["data"]["id"] == nodeName:
+                node_dict[nodeName] = fullNode
+            else:
+                node_dict[node["data"]["id"]] = node
 
         edges = updateEdgesNodesCompositeComponent(dataNeeded["edges"], node_dict)
         updateData(data, list_t, nodes, edges)
