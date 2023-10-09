@@ -28,8 +28,8 @@ def initComponentDiagram(data):
 
     filename = f"C:\\TESISBEHRENSBRICENO\\diagrama_de_componentes_{name}v{cont}"
     graph = graphviz.Graph("Diagrama de componentes", filename=filename)
-    graph.graph_attr["splines"] = "ortho"
-    # graph.attr("splines", "line")
+    graph.graph_attr["splines"] = "line"
+    # graph.graph_attr["splines"] = "ortho"
 
     archs_compdata = handleComponentData(data)
     compdata = count_aspects(archs_compdata)
@@ -71,7 +71,7 @@ def initComponentDiagram(data):
     # s = graphviz.Graph("Leyenda")
 
     #Crea texto de pie de grafo
-    auxtext = "\n\nCantidad de veces presente en las arquitecturas estudiadas\n\n"
+    auxtext = "\n\nCantidad de arquitecturas en las que está presente\n\n"
     for d in compdata:
         name = d["name"]
         cnt = str(d["count"])

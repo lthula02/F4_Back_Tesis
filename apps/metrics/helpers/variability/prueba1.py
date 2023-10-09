@@ -49,7 +49,9 @@ def creategraph(graph, cclist, sclist, mlist):
     edgelist = []
     # Descripciones de aspectos
 
+    
     for cc in cclist:
+        #Crea nodos para los componentes compuestos
         graph.node(
             cc["description"],
             cc["description"],
@@ -78,7 +80,7 @@ def creategraph(graph, cclist, sclist, mlist):
             des = line_breaks(sc["description"])
         else:
             des = sc["description"]
-
+        #Crea nodos para las funcionalidades
         graph.node(
             sc["description"],
             des,
@@ -86,7 +88,7 @@ def creategraph(graph, cclist, sclist, mlist):
             style="rounded,filled",
             fillcolor="khaki1",
         )
-        # Edges nivel 2 al 3 -> Aspecto a descripcion
+        # Edges nivel 2 al 3 -> Aspecto a funcionalidad
         edge = {"from": sc["parent"], "to": sc["description"]}
         if edge in edgelist:
             pass
@@ -102,6 +104,7 @@ def creategraph(graph, cclist, sclist, mlist):
 
     # Nodos conectados con su descripción
     for sc in sclist:
+        #Crea nodos para las clases
         graph.node(
             sc["name"],
             f'{sc["name"] + handlescarq(mlist, sc["name"], sc["mandatory_name"])}',
@@ -123,6 +126,7 @@ def creategraph(graph, cclist, sclist, mlist):
                 arrowhead=arrowhead(sc["mandatory_name"]),
                 style=styleedge(sc["son_logical"]),
             )
+
 
 
 

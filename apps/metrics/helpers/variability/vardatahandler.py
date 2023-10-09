@@ -100,7 +100,7 @@ def handleccdesc(mlist):
 
         auxdic = {
             "description": description,
-            "components": components,
+            # "components": components,
             "mandatory": mandatory,
             "quantity": quant
         }
@@ -240,7 +240,7 @@ def handlesclogical(sclist, mlist):
                     if sc['description'] == son['description']:
                         sc['logical'] = 'or'
             
-                    
+                  
 def handlescdesc(mlist):
     '''
     Genera lista de diccionarios con los nombres de los componentes simples, su padre, su descripción y si son únicos
