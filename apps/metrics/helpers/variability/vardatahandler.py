@@ -1,8 +1,9 @@
 def handlemlist(mlist):
-    #Básicamente, hay que hacer esto separado por arquitectura para no morir HAY ALGO MAL ACA PERO NO SE QUE ES
+    '''
+    Elimina los aspectos repetidos y relaciona todos los nodos a su respectivo aspecto, en cada arquitectura
+    '''
     newlist =[]
     desclist=[]
-
 
     for i in mlist:
         newlist.append([])
@@ -24,7 +25,6 @@ def handlemlist(mlist):
 
     return newlist
                             
-
 def createccnames(mlist):
     '''
     Retorna un array auxiliar de diccionarios con nombre y descripción de los componentes compuestos
@@ -42,7 +42,10 @@ def createccnames(mlist):
     return ccnames
 
 def createscnames(mlist):
-    '''Retorna: Lista con diccionarios que contienen nombre, descripción y padre de los componentes simples'''
+    '''
+    Retorna la lista con diccionarios que contienen nombre, descripción y padre de los componentes simples
+    '''
+    
     scnames = []
     for i in range(len(mlist)):
         for j in range(len(mlist[i])):
@@ -61,14 +64,17 @@ def ismandatory(mlist, auxlist, item):
     Recibe: Lista de arquitecturas
             Lista auxiliar con X de un componente
             Item que se desea conocer su obligatoreidad
+    Retorna True si el componente es obligatorio y false si no
     '''
-    if auxlist.count(item) == len(mlist):
+    if auxlist.count(item) >= len(mlist):
         return True
     else:
         return False
 
 def handleccdesc(mlist):
-    '''Genera lista de diccionarios que contienen los nombres de componentes compuestos, su descripción y si son obligatorios'''
+    '''
+    Genera lista de diccionarios que contienen los nombres de componentes compuestos, su descripción, si son obligatorios y su valor lógico
+    '''
     mainlist = []
     descriptions = []
     ccnames = createccnames(mlist)
@@ -94,7 +100,7 @@ def handleccdesc(mlist):
 
         auxdic = {
             "description": description,
-            "components": components,
+            # "components": components,
             "mandatory": mandatory,
             "quantity": quant
         }
@@ -127,11 +133,6 @@ def handleccdesc(mlist):
         for e in mainlist:
             e['logical'] = logical
 
-        
-
-
-        
-    
     return mainlist
 
 def handlesclogical(sclist, mlist):
@@ -152,74 +153,118 @@ def handlesclogical(sclist, mlist):
 
     #Eliminamos padres repetidos
     parentlist = list(set(parentlist))
-    print(f'PARENTLIST => {parentlist}')
 
     for p in parentlist:
         sonlist = []
         for s in sclist:
             if s['parent'] == p:
                 for i in range(s['son_count']):
-                    sonlist.append({'description': s['description'], 'source': s['source']})
+                    aux = {'description': s['description'], 'source': s['source']}
+                    if aux in sonlist:
+                        pass
+                    else:
+                        sonlist.append(aux)
                 
 
         dic = {
             'parent': p,
             'son_list': sonlist,
-            'source': s['source']
         }
         parentson.append(dic)
 
 
-    for sc in sclist:
-        #recorremos lista de componentes simples
-        for p in parentson:
-            #recorremos lista de padre-hijo
+    # Recorremos lista de padre-hijo
+    for p in parentson:
+        #Contador de cantidad de veces que está presente un aspecto en las arquitecturas
+        cont=0
+        for arq in mlist:
+            for asp in arq:
+                if asp['description'] ==p['parent']:
+                    cont+=1
+        #Si todos los hijos de p, son de una arquitectura distinta, entonces, la lógica para ellos debe ser xor
+        #Si todos los hijos están en las dos arquitecturas, la lógica es and
+
+        source_list =[]
+        auxson = []
+        for s in p['son_list']:
+            source_list.append(s['source'])
+            if s['description'] in auxson:
+                pass
+            else:
+                auxson.append(s['description'])
+        
+        
+
+        for son in p['son_list']:
+
+            #Creamos lista para hijos sin repetir
+            auxlist = []
+            for x in p['son_list']:
+                if x['description'] in auxlist:
+                    pass
+                else:
+                    auxlist.append(x['description'])
+            #si la lista tiene un solo hijo, es and
+            if len(auxlist) ==1:
+                for sc in sclist:
+                    if sc['description'] == son['description']:
+                        sc['logical'] = 'and'
+
+
+            #cada hijo tiene un source, y si sale de 2 sources, es que está repetido.
+            #si la cantidad de sources es igual a la cantidad de hijos * la cantidad arquitecturas, es and
+           
+            elif len(source_list) == (len(auxson)*cont):
+                for sc in sclist:
+                    if sc['description'] == son['description']:
+                        sc['logical'] = 'and'
+
+            #Si todos los hijos son del mismo source, es and
+            elif len(list(set(source_list))) ==1:
+                for sc in sclist:
+                    if sc['description'] == son['description']:
+                        sc['logical'] = 'and'
+
+
+            #Si la cantidad de hijos es igual a la cantidad de sources sin repetir, entonces es xor
+            elif len(p['son_list']) == len(list(set(source_list))):
+                for sc in sclist:
+                    if sc['description'] == son['description']:
+                        sc['logical'] = 'xor'
+
             
-            for son in p['son_list']:
-                #recorremos la lista de hijos de cada padre
-                if sc['description'] == son['description']:
-                #Hacemos el match del componente simple con el hijo
-                    
-                    if len(p['son_list']) ==1:
-                        sc['logical'] = 'and'
-
-                    elif len(mlist) == sons.count(son['description']):
-
-                        sc['logical'] = 'and'
-
-                    else:
-                        xor = True
-                        #TODO
-                        sources = []
-                        for i in p['son_list']:
-                            sources.append(i['source'])
-                            if p['son_list'].count(i) != 1:
-                                xor = False
-                        print('------------------------------------')
-                        print(sc['description'])
-                        print(list(set(sources)))
-                        print('------------------------------------')
-                        if xor and (len(list(set(sources)))>1):
-                            sc['logical'] = 'xor'
-                        
-                        elif (len(list(set(sources)))==1):
-                            sc['logical'] = 'and'
-                        else:
-                            sc['logical'] = 'or'
-                
-                    
-    
-
+            
+            #Si no es and, ni xor, es or
+            else:
+                for sc in sclist:
+                    if sc['description'] == son['description']:
+                        sc['logical'] = 'or'
+            
+                  
 def handlescdesc(mlist):
-    '''Genera lista de diccionarios con los nombres de los componentes simples, su padre, su descripción y si son únicos'''
-    compclist = handleccdesc(mlist)
+    '''
+    Genera lista de diccionarios con los nombres de los componentes simples, su padre, su descripción y si son únicos
+    '''
+
     scnames = createscnames(mlist)
 
-    descriptions = []
+    #creo lista de diccionarios con todas las descripciones y la arquitectura de la que provienen, evitando a las descripciones repetidas de la misma arquitectura
+    start_descriptions = []
     for name in scnames:
-        descriptions.append(name['description'])
+        aux = {'desc': name['description'], 'source': name['source']}
+        if aux in start_descriptions:
+            pass
+        else:
+            start_descriptions.append(aux)
     
-    #elimino descripciones repetidas
+
+    #Creo la lista de descripciones, que va a tener las descripciones repetidas asegurándose de que vengan de distinta arquitectura
+    descriptions =[]
+    for d in start_descriptions:
+        descriptions.append(d['desc'])
+
+
+    #Elimino descripciones repetidas
     auxdescriptions = list(set(descriptions))
 
     #creación de lista auxiliar de componente compuesto con sus hijos (componentes simples)
@@ -241,6 +286,8 @@ def handlescdesc(mlist):
         }
         parentson.append(dic)
 
+    
+
 
     for description in auxdescriptions:
         for comp in scnames:
@@ -248,7 +295,6 @@ def handlescdesc(mlist):
                 for cm in parentson:
                     for c in cm['son_list']:
                         if c == comp['name']:
-                            # if descriptions.count(description)
                             mandatory = ismandatory(mlist, descriptions, description)
                             comp['mandatory'] = mandatory
     
@@ -260,6 +306,7 @@ def handlescdesc(mlist):
             components.append(sc)
 
     handlescname(components, mlist)
+    #Agrega valor lógico a la relación aspecto - funcionalidad
     handlesclogical(components, mlist)
 
     return components
@@ -274,8 +321,6 @@ def handlescname(sclist, mainlist):
         for c in m:
             for h in c['composite_component']:
                 namelist.append(h['name'])
-    # for sc in sclist:
-    #     namelist.append(sc['name'])
 
     uniquenames = list(set(namelist))
     for sc in sclist:
@@ -295,7 +340,7 @@ def handlescname(sclist, mainlist):
         sonlist = []
         for comp in sclist:
             if comp['description'] ==parent:
-                sonlist.append({'name': comp['name'],'mandatory': comp['mandatory_name'], 'count': comp['son_count']})
+                sonlist.append({'name': comp['name'],'mandatory': comp['mandatory_name'], 'count': comp['son_count'], 'source': comp['source']})
 
         dic = {
             'parent': parent,
@@ -306,35 +351,87 @@ def handlescname(sclist, mainlist):
 
 
 
-    for ps in parentson:
-        for son in ps['son_list']:
-            #Contador de cuántos hijos obligatorios hay
-            
-            if son['mandatory']:
-                ps['mand']+=1
-
+    for p in parentson:
+        #Contador de cantidad de veces que está presente un aspecto en las arquitecturas
+        cont=0
+        for arq in mainlist:
+            for asp in arq:
+                if asp['description'] ==p['parent']:
+                    cont+=1
         
+        #Si todos los hijos de p, son de una arquitectura distinta, entonces, la lógica para ellos debe ser xor
+        #Si todos los hijos están en las dos arquitecturas, la lógica es and
 
+        source_list =[]
+        auxson = []
+        for s in p['son_list']:
+            source_list.append(s['source'])
+            if s['name'] in auxson:
+                pass
+            else:
+                auxson.append(s['name'])
 
-    for ps in parentson:
-        for sc in sclist:
-            if sc['description'] ==ps['parent']:
-                #Actualiza valor lógico para hijos
-                xor = False        
-                if len(ps['son_list']) ==1:
-                    sc['son_logical'] = 'and'
+        #Crear lista de hijos sin repetir
+        for son in p['son_list']:
+            auxlist = []
+            for s in p['son_list']:
+                if s['name'] not in auxlist:
+                    auxlist.append(s['name'])
 
-                elif ps['mand'] == len(ps['son_list']):
-                    sc['son_logical'] = 'and'
-                else:
-                    xor = True
-                    
-                    for son in ps['son_list']:
-                        num = son['count']
-                        
-                        if num !=1:
-                            xor=False
-                    if xor:
+            #Si la lista tiene un solo hijo, es and
+            if len(auxlist) ==1:
+                for sc in sclist:
+                    if sc['name'] == son['name']:
+                        sc['son_logical'] = 'and'
+
+            # cada hijo tiene un source, y si sale de 2 sources, es que está repetido.
+            #si la cantidad de sources es igual a la cantidad de hijos * la cantidad arquitecturas, es and
+           
+            elif len(source_list) == (len(auxson)*cont):
+                for sc in sclist:
+                    if sc['name'] == son['name']:
+                        sc['son_logical'] = 'and'
+
+            #Si todos los hijos son del mismo source, es and
+            elif len(list(set(source_list))) ==1:
+                for sc in sclist:
+                    if sc['name'] == son['name']:
+                        sc['son_logical'] = 'and'
+
+            #Si la cantidad de hijos es igual a la cantidad de sources sin repetir, entonces es xor
+            elif len(p['son_list']) == len(list(set(source_list))):
+                for sc in sclist:
+                    if sc['name'] == son['name']:
                         sc['son_logical'] = 'xor'
-                    else:
+ 
+            #Si no es and, ni xor, es or
+            else:
+                for sc in sclist:
+                    if sc['name'] == son['name']:
                         sc['son_logical'] = 'or'
+
+def handlescarq(mlist, name, mandatory):
+    '''
+    Agrega al nodo donde se crea el componente simple, un string que indica el nombre de las arquitecturas en las que está presente
+    Recibe: Lista de aquitecturas (array), nombre del componente (string) y si es obligatorio o no (bool)
+    Retorna: String con arquitecturas a la que pertenece el componente
+    '''
+
+    aux = ''
+
+    if mandatory:
+        return aux
+    else:
+        aux+='\n('
+        for arq in mlist:
+            for asp in arq:
+                for comp in asp['composite_component']:
+                    if comp['name'] ==name:
+                        if aux =='\n(':
+                            aux+=asp['arq_name']
+                            break
+                        else:
+                            aux+=f', {asp["arq_name"]}'
+                            break
+        aux +=')'
+        return aux

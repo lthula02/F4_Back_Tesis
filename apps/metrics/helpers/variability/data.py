@@ -2,6 +2,10 @@ from firebase_admin import db
 
 
 def handleVariabilityData(data):
+    '''
+    Crea la estructura de datos necesaria a partir de los datos del firebase
+
+    '''
     uid = data["user_id"]
     project_index = data["project_index"]
     url = "/users/" + uid + "/projects/" + str(project_index)
@@ -40,6 +44,7 @@ def handleVariabilityData(data):
 
             composite_components_data[key] = {
                 "name": component_name,
+                "arq_name": architectures_data[arch_index]['name'],
                 "description": component_desc,
                 "composite_component": [],  # Se asignará más adelante
             }
@@ -61,12 +66,13 @@ def handleVariabilityData(data):
     return archs
 
 
-# Imprimir el resultado para verificar
 def checkVariabilityDiagram(archs):
+    '''Imprime el resultado para verificar'''
     for arch_index, components in enumerate(archs):
         print(f"ARQUITECTURA {arch_index}:")
         for component in components:
             print(f"ID del Componente: {component['name']}")
             print(f"Nombre de Aspecto: {component['description']}")
             print(f"Nodos: {component['composite_component']}")
+            print(f"Nombre Arquitectura: {component['arq_name']}")
             print("--------------------")

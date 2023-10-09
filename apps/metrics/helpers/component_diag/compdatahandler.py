@@ -1,7 +1,7 @@
-"""Aca se van a crear las funciones para manejar la data que crea los diagramas de componentes"""
-
-
 def count_aspects(archs_compdata):
+    '''
+    Agrega a la estructura de datos, una cuenta de en cuántas arquitecturas está presente cada aspecto
+    '''
     component_dict = {}
 
     for arch_data in archs_compdata.values():
@@ -18,7 +18,7 @@ def count_aspects(archs_compdata):
                 component_dict[component_name]["count"] += 1
 
     compdata = list(component_dict.values())
-    print(compdata)
+
     return compdata
 
 
