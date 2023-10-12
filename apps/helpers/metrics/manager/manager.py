@@ -1,11 +1,11 @@
-from apps.metrics.helpers.coupling_helper.coupling import calculate_coupling
-from apps.metrics.helpers.abstractness_helper.abstractness import calculate_abstractness
-from apps.metrics.helpers.instability_helper.instability import calculate_instability
-from apps.metrics.helpers.dms_helper.dms import calculate_dms
-from apps.metrics.helpers.package_mapping_helper.package_mapping import (
+from apps.helpers.metrics.coupling_helper.coupling import calculate_coupling
+from apps.helpers.metrics.abstractness_helper.abstractness import calculate_abstractness
+from apps.helpers.metrics.instability_helper.instability import calculate_instability
+from apps.helpers.metrics.dms_helper.dms import calculate_dms
+from apps.helpers.metrics.package_mapping_helper.package_mapping import (
     calculate_package_mapping,
 )
-from apps.metrics.helpers.name_ressemblance_helper.name_ressemblance import (
+from apps.helpers.metrics.name_ressemblance_helper.name_ressemblance import (
     claculate_nameResemblance,
 )
 

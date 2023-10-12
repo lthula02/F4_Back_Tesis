@@ -4,14 +4,12 @@ from django.db import models
 
 
 class AllMetrics(object):
-
     def __init__(self):
-        self.coupling = Metric('Coupling', None, 'nij', 'ni')
+        self.coupling = Metric("Coupling", None, "nij", "ni")
 
 
-#solo para metricas con 2 variables
-class Metric(object): #acoplamiento, abtsraccion
-
+# solo para metricas con 2 variables
+class Metric(object):  # acoplamiento, abtsraccion
     def __init__(self, name, umbral, nameVariable1, nameVariable2):
         self.name = name
         self.umbral = umbral
@@ -21,10 +19,6 @@ class Metric(object): #acoplamiento, abtsraccion
 
 
 class Variable(object):
-
     def __init__(self, name):
         self.name = name
         self.value = None
- 
-
-

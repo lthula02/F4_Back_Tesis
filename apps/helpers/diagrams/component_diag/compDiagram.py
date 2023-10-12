@@ -1,16 +1,16 @@
 import graphviz
 import os
 from firebase_admin import db
-from apps.metrics.helpers.component_diag.compdata import (
+from apps.helpers.diagrams.component_diag.compdata import (
     handleComponentData,
 )  # De aquí se extraen los datos
-from apps.metrics.helpers.component_diag.compdatahandler import count_aspects
+from apps.helpers.diagrams.component_diag.compdatahandler import count_aspects
 
 
 def initComponentDiagram(data):
-    '''
+    """
     Creación del diagrama de componentes
-    '''
+    """
 
     uid = data["user_id"]
     project_index = data["project_index"]
@@ -66,11 +66,10 @@ def initComponentDiagram(data):
                 arrowhead="none",
             )
 
-
     # Crea subgrafo para la leyenda
     # s = graphviz.Graph("Leyenda")
 
-    #Crea texto de pie de grafo
+    # Crea texto de pie de grafo
     auxtext = "\n\nCantidad de arquitecturas en las que está presente\n\n"
     for d in compdata:
         name = d["name"]

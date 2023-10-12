@@ -15,19 +15,21 @@ Including another URLconf
 """
 from django.urls import include, re_path
 from django.contrib import admin
-from apps.metrics.views import (
+from apps.views import (
+    # METRICS
     CombineMetrics,
     Metricas,
+    # NODE AND COMPOSITE COMPONENTS
+    EditNodeDescription,
     CreateCompositeComponent,
     EditNameCompositeComponent,
     EditNodeCompositeComponent,
-    EditNodeDescription,
-    CreateComponentDiagram,
-    CreateVariabilityDiagram,
     CreateCompositeComponentBoard,
     EditCompositeComponentDescription,
-)
-from core.views import (
+    # DIAGRAMS
+    CreateComponentDiagram,
+    CreateVariabilityDiagram,
+    # CORE
     Login,
     Proyectos,
     Arquitecturas,

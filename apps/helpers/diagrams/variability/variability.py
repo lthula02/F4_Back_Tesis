@@ -1,11 +1,13 @@
 import graphviz
 import os
 from firebase_admin import db
-from apps.metrics.helpers.variability.data import handleVariabilityData
-from apps.metrics.helpers.variability.vardatahandler import handleccdesc
-from apps.metrics.helpers.variability.vardatahandler import handlescdesc
-from apps.metrics.helpers.variability.vardatahandler import handlemlist
-from apps.metrics.helpers.variability.vardatahandler import handlescarq
+from apps.helpers.diagrams.variability.data import handleVariabilityData
+from apps.helpers.diagrams.variability.vardatahandler import (
+    handleccdesc,
+    handlescdesc,
+    handlemlist,
+    handlescarq,
+)
 
 
 def arrowhead(comp):
@@ -49,9 +51,8 @@ def creategraph(graph, cclist, sclist, mlist):
     edgelist = []
     # Descripciones de aspectos
 
-    
     for cc in cclist:
-        #Crea nodos para los componentes compuestos
+        # Crea nodos para los componentes compuestos
         graph.node(
             cc["description"],
             cc["description"],
@@ -80,7 +81,7 @@ def creategraph(graph, cclist, sclist, mlist):
             des = line_breaks(sc["description"])
         else:
             des = sc["description"]
-        #Crea nodos para las funcionalidades
+        # Crea nodos para las funcionalidades
         graph.node(
             sc["description"],
             des,
@@ -104,7 +105,7 @@ def creategraph(graph, cclist, sclist, mlist):
 
     # Nodos conectados con su descripción
     for sc in sclist:
-        #Crea nodos para las clases
+        # Crea nodos para las clases
         graph.node(
             sc["name"],
             f'{sc["name"] + handlescarq(mlist, sc["name"], sc["mandatory_name"])}',
@@ -128,12 +129,10 @@ def creategraph(graph, cclist, sclist, mlist):
             )
 
 
-
-
 def initVariabilityDiagram(data):
-    '''
+    """
     Función principal para crear el diagrama
-    '''
+    """
     uid = data["user_id"]
     project_index = data["project_index"]
     url = "/users/" + uid + "/projects/" + str(project_index)
@@ -155,22 +154,24 @@ def initVariabilityDiagram(data):
     graph.graph_attr["splines"] = "polyline"
     graph.graph_attr["rankdir"] = "LR"
 
-    #Funciones para el manejo de la data
+    # Funciones para el manejo de la data
     archs = handleVariabilityData(data)
     archs = handlemlist(archs)
     scnodes = handlescdesc(archs)
     ccnodes = handleccdesc(archs)
 
-    #Nodo del título
-    graph.node("head", name.upper(), shape="underline", fontsize="24", fontname="times-bold")
+    # Nodo del título
+    graph.node(
+        "head", name.upper(), shape="underline", fontsize="24", fontname="times-bold"
+    )
     creategraph(graph, ccnodes, scnodes, archs)
 
-    #Se crea la leyenda, a partir de un subgrafo
+    # Se crea la leyenda, a partir de un subgrafo
 
-    # Crea subgrafo 
+    # Crea subgrafo
     s = graphviz.Graph("Leyenda")
 
-    #Nodos auxiliares transparentes
+    # Nodos auxiliares transparentes
     s.node("por4", " ", shape="plain", fontsize="8", bold="True")
     s.node("pfun4", " ", shape="plain", fontsize="8", bold="True")
     s.node("pasp4", " ", shape="plain", fontsize="8", bold="True")
@@ -190,8 +191,7 @@ def initVariabilityDiagram(data):
     s.node("pmand", " ", shape="plain", fontsize="8")
     s.node("por", " ", shape="plain", fontsize="8", bold="True")
 
-
-    #Nodos con contenido
+    # Nodos con contenido
     s.node("xor", "  Alternativa", shape="plain", fontsize="16", bold="True")
     s.node("and", "  And", shape="plain", fontsize="16", bold="True")
     s.node("ley", "LEYENDA", shape="underline", fontsize="24", fontname="times-bold")
@@ -249,7 +249,6 @@ def initVariabilityDiagram(data):
     s.edge("pand", "and", dir="forward", style="solid", arrowhead="none")
     s.edge("pxor", "xor", dir="forward", style="dotted", arrowhead="none")
     s.edge("pxor", "xor", dir="forward", style="dotted", arrowhead="none")
-
 
     j = graph.subgraph(graph=s)
 

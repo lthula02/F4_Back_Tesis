@@ -1,4 +1,4 @@
-from core.parser.parser import xmlToJson
+from apps.parser.parser import xmlToJson
 from fuzzywuzzy import fuzz
 
 # from fuzzywuzzy import process
