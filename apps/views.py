@@ -7,7 +7,6 @@ from firebase_admin import credentials, db, initialize_app
 # METRICS RELATED HANDLERS
 from apps.helpers.manager.manager import (
     handleEditArchitecture,
-    handleEditNode,
 )
 from apps.helpers.metrics.combine_metrics import (
     handleCombineMetrics,
@@ -40,7 +39,11 @@ from apps.helpers.versiones.versiones import (
 )
 
 # ELEMENTS HANDLERS
-from apps.helpers.elementos.elementos import createElements, updatedElements
+from apps.helpers.elementos.elementos import (
+    handleEditNode,
+    createElements,
+    updatedElements,
+)
 
 # COMPOSITE COMPONENTS HANDLERS
 from apps.helpers.elementos.composite_component_handler import (

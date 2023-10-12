@@ -1,4 +1,5 @@
 from firebase_admin import db
+from rest_framework.response import Response
 from apps.graphManager.manager import getEdgeIds, getNodeIds, manageFiles
 
 
@@ -86,6 +87,44 @@ def getNodesAndEdges(url):
     node_set = getNodeIds(nodes)
     edge_set = getEdgeIds(edges)
     return {"nodes": nodes, "edges": edges, "node_set": node_set, "edge_set": edge_set}
+
+
+# Actualiza la descripción (funcionalidad) del nodo
+def handleEditNode(data):
+    uid = data["user_id"]
+    project_index = data["project_index"]
+    arch_index = int(data["arch_index"])
+    version_index = data["ver_index"]
+    url = "/users/" + uid + "/projects/" + str(project_index)
+
+    node_id = data["node_id"]
+    new_name = data["new_name"]
+
+    arch_ref = db.reference(url + "/architectures")
+    arch_arr = arch_ref.get()
+
+    nodes = arch_arr[int(arch_index)]["versions"][int(version_index)]["elements"][
+        "nodes"
+    ]
+    try:
+        for node in nodes:
+            if node["data"]["id"] == node_id:
+                print(node["data"]["id"])
+                node["data"].update({"description": str(new_name).strip().capitalize()})
+
+        # Se actualizan los nodos
+        arch_arr[int(arch_index)]["versions"][int(version_index)]["elements"][
+            "nodes"
+        ] = nodes
+        # Se actualiza la bd
+        # arch_arr[int(arch_index)]['versions'][int(version_index)]['elements'] = elements
+        project_ref = db.reference(url)
+        project_ref.update({"architectures": arch_arr})
+
+        return Response(data={"ok": True})
+    except Exception as e:
+        print("Error:", e)
+        return Response({"ok": False})
 
 
 def addNewElements(url, elems):
