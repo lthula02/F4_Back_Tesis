@@ -2,7 +2,7 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 
 # IMPORTS FOR METRICS
-from apps.helpers.metrics.manager.manager import *
+from apps.helpers.manager.manager import *
 from apps.helpers.metrics.combine_metrics_helper.combine_metrics import (
     handleCombineMetrics,
     handleCreateCompositeComponent,
