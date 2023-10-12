@@ -7,6 +7,8 @@ from apps.helpers.metrics.combine_metrics_helper.combine_metrics import (
     handleCombineMetrics,
     handleCreateCompositeComponent,
 )
+
+# IMPORTS FOR COMPOSITE COMPONENTS
 from apps.helpers.metrics.combine_metrics_helper.composite_component_handler import (
     handleEditName,
     handleEditNodeCompositeComponent,
