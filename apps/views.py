@@ -1,45 +1,54 @@
 from rest_framework.views import APIView
 from rest_framework.response import Response
 
-# IMPORTS FOR METRICS
-from apps.helpers.manager.manager import *
+# FIREBASE
+from firebase_admin import credentials, db, initialize_app
+
+# METRICS RELATED HANDLERS
+from apps.helpers.manager.manager import (
+    handleEditArchitecture,
+    handleEditNode,
+)
 from apps.helpers.metrics.combine_metrics import (
     handleCombineMetrics,
     handleCreateCompositeComponent,
 )
 
-# IMPORTS FOR COMPOSITE COMPONENTS
+# DIAGRAMS HANDLERS
+from apps.helpers.diagrams.variability.variability import initVariabilityDiagram
+from apps.helpers.diagrams.component_diag.compDiagram import initComponentDiagram
+
+# PROJECT HANDLERS
+from apps.helpers.proyectos.proyectos import (
+    addNewProject,
+    handleRemoveProject,
+    handleEditProject,
+)
+
+# ARCHITECTURE HANDLERS
+from apps.helpers.arquitecturas.arquitecturas import (
+    createArchitecture,
+    handleDeleteArchitecture,
+    handleEditArchitectureName,
+)
+
+# VERSION HANDLERS
+from apps.helpers.versiones.versiones import (
+    createNewVersion,
+    handleDeleteVersion,
+    handleEditVersion,
+)
+
+# ELEMENTS HANDLERS
+from apps.helpers.elementos.elementos import createElements, updatedElements
+
+# COMPOSITE COMPONENTS HANDLERS
 from apps.helpers.elementos.composite_component_handler import (
     handleEditName,
     handleEditNodeCompositeComponent,
     handleCompositeComponentBoard,
     handleEditCompositeComponentDescription,
 )
-
-# IMPORTS FOR DIAGRAMS
-from apps.helpers.diagrams.variability.variability import initVariabilityDiagram
-from apps.helpers.diagrams.component_diag.compDiagram import initComponentDiagram
-
-# IMPORT FOR FIREBASE
-from firebase_admin import credentials, db, initialize_app
-
-# IMPORTS FOR BASIC FUNCTIONAL HANDLERS
-from apps.helpers.proyectos.proyectos import (
-    addNewProject,
-    handleRemoveProject,
-    handleEditProject,
-)
-from apps.helpers.arquitecturas.arquitecturas import (
-    createArchitecture,
-    handleDeleteArchitecture,
-    handleEditArchitectureName,
-)
-from apps.helpers.versiones.versiones import (
-    createNewVersion,
-    handleDeleteVersion,
-    handleEditVersion,
-)
-from apps.helpers.elementos.elementos import createElements, updatedElements
 
 import jwt
 

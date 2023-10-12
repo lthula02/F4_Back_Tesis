@@ -70,23 +70,6 @@ def handleEditNode(data):
 
 
 def editArchitecture(url, archIndex, versionIndex, name_ressemblance_umbral):
-    """Editar el nombre de una arquitecturas de la
-    base de datos del usuario
-
-    Parameters
-    ----------
-    url: str
-        dirección de la base de datos
-    archIndex: int
-        índice de la arquitectura
-    archName: str
-        nuevo nombre de la arquitectura
-
-    Returns
-    -------
-    list
-        lista actualizada con todas las arquitecturas del usuario
-    """
     arch_ref = db.reference(url + "/architectures")
     arch_arr = arch_ref.get()
 
