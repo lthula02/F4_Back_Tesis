@@ -1,6 +1,6 @@
 from firebase_admin import db
 from rest_framework.response import Response
-from apps.helpers.metrics.combine_metrics_helper.combine_metrics import SearchNode
+from apps.helpers.metrics.combine_metrics import SearchNode
 
 
 # Esta función extrae la información de la base de datos para poder ser utilizada por las funciones

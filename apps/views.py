@@ -3,13 +3,13 @@ from rest_framework.response import Response
 
 # IMPORTS FOR METRICS
 from apps.helpers.manager.manager import *
-from apps.helpers.metrics.combine_metrics_helper.combine_metrics import (
+from apps.helpers.metrics.combine_metrics import (
     handleCombineMetrics,
     handleCreateCompositeComponent,
 )
 
 # IMPORTS FOR COMPOSITE COMPONENTS
-from apps.helpers.metrics.combine_metrics_helper.composite_component_handler import (
+from apps.helpers.elementos.composite_component_handler import (
     handleEditName,
     handleEditNodeCompositeComponent,
     handleCompositeComponentBoard,
