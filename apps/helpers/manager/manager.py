@@ -14,20 +14,6 @@ from rest_framework.response import Response
 
 
 def handleEditArchitecture(data):
-    """Manejar la edición del nombre de una arquitectura
-    de la base de datos del usuario
-
-    Parameters
-    ----------
-    data: dict
-        diccionario con la información de la solicitud
-
-    Returns
-    -------
-    list
-        lista actualizada con todas las arquitecturas del usuario
-    """
-
     uid = data["user_id"]
     project_index = data["project_index"]
     arch_index = int(data["arch_index"])
