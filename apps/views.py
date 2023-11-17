@@ -16,6 +16,7 @@ from apps.helpers.metrics.combine_metrics import (
 # DIAGRAMS HANDLERS
 from apps.helpers.diagrams.variability.variability import initVariabilityDiagram
 from apps.helpers.diagrams.component_diag.compDiagram import initComponentDiagram
+from apps.helpers.diagrams.class_diag.classdiagram import initClassDiagram
 
 # PROJECT HANDLERS
 from apps.helpers.proyectos.proyectos import (
@@ -268,6 +269,11 @@ class EditNodeCompositeComponent(APIView):
 class EditNodeDescription(APIView):
     def put(self, request):
         return handleEditNode(request.data["data"])
+
+
+class CreateClassDiagram(APIView):
+    def put(self, request):
+        return Response(initClassDiagram(request.data["data"]))
 
 
 class CreateComponentDiagram(APIView):

@@ -27,6 +27,7 @@ from apps.views import (
     CreateCompositeComponentBoard,
     EditCompositeComponentDescription,
     # DIAGRAMS
+    CreateClassDiagram,
     CreateComponentDiagram,
     CreateVariabilityDiagram,
     # CORE
@@ -61,6 +62,11 @@ urlpatterns = [
         r"^edit_node_cc/", EditNodeCompositeComponent.as_view(), name="edit_node_cc"
     ),
     re_path(r"^edit_node_desc/", EditNodeDescription.as_view(), name="edit_node_desc"),
+    re_path(
+        r"^create_class_diagram/",
+        CreateClassDiagram.as_view(),
+        name="create_class_diagram",
+    ),
     re_path(
         r"^create_comp_diagram/",
         CreateComponentDiagram.as_view(),
