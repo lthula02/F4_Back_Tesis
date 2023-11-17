@@ -11,13 +11,11 @@ def handleClassData(data):
     arch_ref = db.reference(url + "/architectures")
     arch_data = arch_ref.get()
 
-    arch_name_ref = arch_data[int(arch_index)]["versions"][int(version_index)]["name"]
-    arch_name = arch_name_ref.get()
+    arch_name = arch_data[int(arch_index)]["versions"][int(version_index)]["name"]
 
-    edges_ref = arch_data[int(arch_index)]["versions"][int(version_index)]["elements"][
+    edges = arch_data[int(arch_index)]["versions"][int(version_index)]["elements"][
         "edges"
     ]
-    edges = edges_ref.get()
 
     compdata_dict = {}  # Diccionario para almacenar la información temporalmente
     for edge in edges:
@@ -29,10 +27,9 @@ def handleClassData(data):
             if target_component != source_component:
                 compdata_dict[source_component].add(target_component)
 
-    list_t_ref = arch_data[int(arch_index)]["versions"][int(version_index)]["elements"][
+    list_t = arch_data[int(arch_index)]["versions"][int(version_index)]["elements"][
         "list_t"
     ]
-    list_t = list_t_ref.get()
 
     class_data = []  # Lista de diccionarios con los datos
 
@@ -45,7 +42,7 @@ def handleClassData(data):
         class_data.append(
             {
                 "head": head,
-                "body": list(cc["composite_component"].values()),
+                "body": list(cc["composite_component"]),
                 "requires": list(compdata_dict[head]),
             }
         )
