@@ -32,7 +32,7 @@ def initClassDiagram(data):
 
     # Creación de los nodos
     for cl in classdata:
-        print(bodytotext(cl["body"]))
+        #print(bodytotext(cl["body"]))
         textlabel = "{" + "\<" + cl["head"] + "\>" + "|" + bodytotext(cl["body"]) + "}"
         graph.node(cl["head"], label=textlabel, shape="record", fontsize="8")
 

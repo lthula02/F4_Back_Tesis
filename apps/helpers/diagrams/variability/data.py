@@ -61,7 +61,7 @@ def handleVariabilityData(data):
 
         archs.append(list(composite_components_data.values()))
 
-    checkVariabilityDiagram(archs)
+    # checkVariabilityDiagram(archs)
     # Retornar la lista de arquitecturas
     return archs
 
