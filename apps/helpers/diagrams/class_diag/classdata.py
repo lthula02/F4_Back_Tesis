@@ -34,18 +34,28 @@ def handleClassData(data):
     class_data = []  # Lista de diccionarios con los datos
 
     for cc in list_t:
+        # Determine the 'head' based on 'name' or 'description'
         if cc["name"] in compdata_dict:
             head = cc["name"]
         elif cc["description"] in compdata_dict:
             head = cc["description"]
-
-        class_data.append(
-            {
-                "head": head,
-                "body": list(cc["composite_component"]),
-                "requires": list(compdata_dict[head]),
-            }
-        )
+        
+        # Check if 'head' already exists in class_data
+        existing_component = next((item for item in class_data if item["head"] == head), None)
+        
+        if existing_component:
+            # If it exists, extend the 'body' and 'requires' of the existing component
+            existing_component["body"].extend(list(cc["composite_component"]))
+            existing_component["requires"].extend(list(compdata_dict[head]))
+        else:
+            # Otherwise, create a new component
+            class_data.append(
+                {
+                    "head": head,
+                    "body": list(cc["composite_component"]),
+                    "requires": list(compdata_dict[head]),
+                }
+            )
 
     return arch_name, class_data
 

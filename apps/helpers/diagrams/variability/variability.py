@@ -143,11 +143,11 @@ def initVariabilityDiagram(data):
     # Contador de número de gráficos generados para crear el nombre del pdf
     cont = 0
     while os.path.exists(
-        f"C:\\TESISBEHRENSBRICENO\\diagrama_de_variabilidad_{name}v{cont}"
+        f"C:\\TESISFINAL\\diagrama_de_variabilidad_{name}v{cont}"
     ):
         cont += 1
 
-    filename = f"C:\\TESISBEHRENSBRICENO\\diagrama_de_variabilidad_{name}v{cont}"
+    filename = f"C:\\TESISFINAL\\diagrama_de_variabilidad_{name}v{cont}"
 
     # Crea el grafo
     graph = graphviz.Graph("Grafo", filename=filename)

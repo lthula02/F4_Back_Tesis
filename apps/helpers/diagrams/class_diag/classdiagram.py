@@ -9,10 +9,11 @@ def initClassDiagram(data):
     name, classdata = handleClassData(data)
     cont = 0
 
-    while os.path.exists(f"C:\\TESISBEHRENSBRICENO\\diagrama_de_clases_{name}v{cont}"):
+    while os.path.exists(f"C:\\TESISFINAL\\diagrama_de_clases_{name}v{cont}"):
         cont += 1
 
-    filename = f"C:\\TESISBEHRENSBRICENO\\diagrama_de_clases_{name}v{cont}"
+    filename = f"C:\\TESISFINAL\\diagrama_de_clases_{name}v{cont}"
+    
     graph = graphviz.Graph("Diagrama de clases", filename=filename)
     graph.graph_attr["splines"] = "line"
     graph.graph_attr["fontsize"] = "10"
@@ -32,7 +33,7 @@ def initClassDiagram(data):
 
     # Creación de los nodos
     for cl in classdata:
-        #print(bodytotext(cl["body"]))
+        # print(bodytotext(cl["body"]))
         textlabel = "{" + "\<" + cl["head"] + "\>" + "|" + bodytotext(cl["body"]) + "}"
         graph.node(cl["head"], label=textlabel, shape="record", fontsize="8")
 

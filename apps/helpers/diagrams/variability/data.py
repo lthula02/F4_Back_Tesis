@@ -33,7 +33,6 @@ def handleVariabilityData(data):
             "elements/nodes"
         )
         nodes = nodes_ref.get()
-
         for component_data in composite_components:
             component_name = component_data["name"]
             component_desc = component_data["description"]

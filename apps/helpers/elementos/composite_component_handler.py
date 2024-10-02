@@ -200,29 +200,32 @@ def handleCompositeComponentBoard(data):
             ca = []  # Required interfaces
             ce = []  # Provided interfaces
 
+            print(f"\nProcessing composite component: {item['name']}")  # Name of the composite component
+
             for component in item["composite_component"]:
+                print(f"Looking for component: {component}")
                 for edge in edges:
                     source_node = node_dict[edge["data"]["source"]]
                     target_node = node_dict[edge["data"]["target"]]
 
+                    # Check if current component is the source of this edge
                     if component == source_node["data"]["id"]:
-                        composite_source = source_node["data"].get("composite", "")
-                        if source_node["data"]["composite"] != composite_source:
-                            if (
-                                edge["scratch"]["index"] not in ce
-                                and edge["scratch"]["index"] not in ca
-                            ):
-                                ce.append(edge["scratch"]["index"])
+                        print(f"Component matched with source node: {source_node['data']['id']}")
+                        if edge["scratch"]["index"] not in ce and edge["scratch"]["index"] not in ca:
+                            print(f"Adding to provided interfaces (ce): {edge['scratch']['index']}")
+                            ce.append(edge["scratch"]["index"])
 
+                    # Check if current component is the target of this edge
                     if component == target_node["data"]["id"]:
-                        composite_target = target_node["data"].get("composite", "")
-                        if target_node["data"]["composite"] != composite_target:
-                            if (
-                                edge["scratch"]["index"] not in ca
-                                and edge["scratch"]["index"] not in ce
-                            ):
-                                ca.append(edge["scratch"]["index"])
+                        print(f"Component matched with target node: {target_node['data']['id']}")
+                        if edge["scratch"]["index"] not in ca and edge["scratch"]["index"] not in ce:
+                            print(f"Adding to required interfaces (ca): {edge['scratch']['index']}")
+                            ca.append(edge["scratch"]["index"])
 
+            print("Required interfaces (ca):", ca)
+            print("Provided interfaces (ce):", ce)
+
+            # Update the item with the interfaces
             item.update(
                 {
                     "required_interfaces": ca,
@@ -237,6 +240,8 @@ def handleCompositeComponentBoard(data):
     except Exception as e:
         print(e)
         return Response(data={"ok": False})
+
+
 
 
 # TODO

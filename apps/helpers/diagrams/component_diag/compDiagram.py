@@ -22,11 +22,11 @@ def initComponentDiagram(data):
     cont = 0
 
     while os.path.exists(
-        f"C:\\TESISBEHRENSBRICENO\\diagrama_de_componentes_{name}v{cont}"
+        f"C:\\TESISFINAL\\diagrama_de_componentes_{name}v{cont}"
     ):
         cont += 1
 
-    filename = f"C:\\TESISBEHRENSBRICENO\\diagrama_de_componentes_{name}v{cont}"
+    filename = f"C:\\TESISFINAL\\diagrama_de_componentes_{name}v{cont}"
     graph = graphviz.Graph("Diagrama de componentes", filename=filename)
     graph.graph_attr["splines"] = "line"
     # graph.graph_attr["splines"] = "ortho"
